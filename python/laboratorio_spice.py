@@ -14,6 +14,10 @@ import ahkab
 import pylab as plt
 from IPython import get_ipython
 
+files_directory = "files\\"
+fig_directory = "figuras\\"
+import matplotlib.pyplot as plot
+
 # %% [markdown]
 #
 #  # Objetivo del laboratorio
@@ -318,6 +322,13 @@ if isdir(files_directory):
 # crea un directorio para alojar todo los archivos que se generen
 mkdir(files_directory)
 
+fig_directory = "figuras\\"
+# si el directorio existe se elimina con su contenido
+if isdir(fig_directory):
+    rmtree(fig_directory)
+# crea un directorio para alojar todo los archivos que se generen
+mkdir(fig_directory)
+
 # %% [markdown]
 # ## Circuito simple (Fuente + carga)
 # El primer circuito a analizar es el circuito mas simple que se puede encontrar, que consiste en una fuente de alimentación con un carga representada con una resistencia.
@@ -350,8 +361,7 @@ v1 N001 0 type=vdc vdc=9
 # Haciendo uso de la librería `Ahkab` procesamos el circuito que acabamos de definir.
 
 # %%
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    files_directory + 'circuito_sencillo.sp')
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit(files_directory + 'circuito_sencillo.sp')
 
 # %% [markdown]
 # El método `ahkab.netlist_parser.parse_circuit()` ha creado una lista en cuya primera posición se ha guardado la lista de componentes y sus conexiones, y en la segunda posición, la listas de analisis que se quieren realizar durante la simulación.
@@ -365,8 +375,7 @@ análisis_en_netlist = circuito_y_análisis[1]
 # Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de analisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de analisis a realizar (dc, tran, etc.) y los parametros con los que se realizará cada analisis.
 
 # %%
-lista_de_análisis = ahkab.netlist_parser.parse_analysis(
-    netlist, análisis_en_netlist)
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 print(lista_de_análisis)
 
 # %% [markdown]
@@ -703,8 +712,7 @@ R3 3 1 5k
 # Haciendo uso de la librería `Ahkab` procesamos el circuito que acabamos de definir.
 
 # %%
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    'files\\resistencias_en_serie.net')
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_serie.net')
 
 # %% [markdown]
 # El método `ahkab.netlist_parser.parse_circuit()` ha creado una lista en cuya primera posición se ha guardado la lista de componentes y sus conexiones, y en la segunda posición, la listas de analisis que se quieren realizar durante la simulación.
@@ -719,8 +727,7 @@ análisis_en_netlist = circuito_y_análisis[1]
 # Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de analisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de analisis a realizar (dc, tran, etc.) y los parametros con los que se realizará cada analisis.
 
 # %%
-lista_de_análisis = ahkab.netlist_parser.parse_analysis(
-    netlist, análisis_en_netlist)
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 print(lista_de_análisis)
 
 # %% [markdown]
@@ -842,8 +849,7 @@ R3 3 0 5k
 
 # %%
 # Procesar circuito
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    'files\\resistencias_en_serie.net')
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_serie.net')
 # Separar datos netlist y simulaciones
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
@@ -985,18 +991,19 @@ r5 2 0 470
 
 # %%
 # Procesar circuito
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    'files\\resistencias_en_paralelo_1.cir')
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_paralelo_1.cir')
 # Separar datos netlist y simulaciones
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
-lista_de_análisis = ahkab.netlist_parser.parse_analysis(
-    netlist, análisis_en_netlist)
-resultados = ahkab.run(netlist, lista_de_análisis)
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 # Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
+# %% [markdown]
+#  Ejecutamos la simulación
+# %%
+resultados = ahkab.run(netlist, lista_de_análisis)
 
 # %% [markdown]
 # Imprimimos los resultados del análisis `.op`. Como puedes comprobar, Ahkab sólo reporta la intensidad de corriente en las ramas en las que hay una pila (en este caso, la rama donde está la pila `VDD`).
@@ -1009,16 +1016,13 @@ print(resultados['op'])
 # 
 # > Inserta dos *pilas virtuales* de 0 voltios en el resto de ramas del circuito (`Vdummy1` en la rama donde está `R5` y `Vdummy2` en la rama donde está `R3` y `R4`) para que Ahkab nos imprima también la corriente en las mismas. Es muy parecido al tercer circuito que tienes que resolver, donde `V1`, `V2` y `V3` tienen cero voltios. Estas *pilas nulas* son, a todos los efectos, *simples cables*. Una vez que ya tienes las corrientes en todas las ramas, comprueba que se cumple la Ley de Kirchhoff para las corrientes:
 # 
-# > $$
-# I_{\text{entrante}} = \sum_i^{N} I_{\text{salientes}}
-# > $$
+# > $$I_{\text{entrante}} = \sum_i^{N} I_{\text{salientes}}$$
 #
 # > Repite lo mismo para los otros dos circuitos. Realiza además los cálculos con Sympy (recalcula los mismos voltajes que devuelve Ahkab a partir de la corriente que sí te devuelve la simulación) y cuidando de no olvidar las unidades. Recuerda que el objeto `resultados` alberga toda la información que necesitas de manera indexada. Ya han aparecido un ejemplo más arriba. Es decir: no *copies* los números *a mano*, trabaja de manera informáticamente elegante (usando la variable `resultados`).
 
 # %% [markdown]
 # ### **Respuesta** 
 # Definimos el netlist con las dos pilas de $\mathrm{0v}$
-
 # %%
 %%writefile "files\resistencias_en_paralelo_1.cir"
 * resistencias en paralelo
@@ -1031,50 +1035,42 @@ r4 3 5 1.5k
 r5 2 4 470
 .op
 .end
-
 # %% [markdown]
 # Procesamos el circuito con `Ahkab` y extraemos los datos.
 # %%
 # Procesar circuito
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    'files\\resistencias_en_paralelo_1.cir')
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_paralelo_1.cir')
 # Separar datos netlist y simulaciones
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
-lista_de_análisis = ahkab.netlist_parser.parse_analysis(
-    netlist, análisis_en_netlist)
-resultados = ahkab.run(netlist, lista_de_análisis)
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 # Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
-
+# %% [markdown]
+#  Ejecutamos la simulación
+# %%
+resultados = ahkab.run(netlist, lista_de_análisis)
 # %% [markdown]
 # Imprimimos los resultados del análisis `.op`. 
-
 # %%
 print(resultados['op'])
-
 # %% [markdown]
 # Como podemos ver la suma de las corrientes de las pilas dummy es igual a la corriente total. Comprobemoslos.
 # 
 # La corriente total es:
-
 # %%
-intensidad = resultados['op'].results._dict['I(VDD)']*amperes
+intensidad = -resultados['op'].results._dict['I(VDD)']*amperes
 convert_to(intensidad, [amperes]).n(5)
-
 # %% [markdown]
 # La suma de las corrientes de la pilas dummy es:
-
 # %%
 intensidad_dummy1 = resultados['op'].results._dict['I(VDUMMY1)']*amperes
 intensidad_dummy2 = resultados['op'].results._dict['I(VDUMMY2)']*amperes
 convert_to(intensidad_dummy1+intensidad_dummy2, [amperes]).n(5)
-
 # %% [markdown]
 # GENIAL !!! Se cumple la Ley de Kirchhoff
-
 # %% [markdown]
 # ### Comprobemos el resultado de `Ahkab` con Sympy
 # Ahora tenemos resistencias en paralelo, por lo que ya no podemos sumar sus resistencias para aberiguar la resistencia total del circuito.
@@ -1084,7 +1080,6 @@ convert_to(intensidad_dummy1+intensidad_dummy2, [amperes]).n(5)
 # Antes de responder a esta pregunta calculemos la resistencia total con los datos de los que disponemos. 
 # 
 # Nótese que no existen resistencias negativas, ya que son componentes pasivos. Puesto que `Ahkab` nos esta dando la corriente en negativo, le invertimos el signo para que la resistencia resulte positiva.
-
 # %%
 v1 = 12*volts
 r2 = 1*kilo*ohms
@@ -1096,17 +1091,13 @@ resistencia = symbols('r')
 ley_ohm = Eq(v1, intensidad*resistencia)
 resistencia_total = solve(ley_ohm, resistencia)
 convert_to(resistencia_total[0], [ohms]).n(5)
-
 # %% [markdown]
 # Como ya sebemos, la resistencia total de cargas en serie es la suma de sus resistencias. Ahora que conocemos la resistencia total, la resistencia equivalente de las dos mallas formadas por `R3`, `R4` y `R5`, solo puede ser la resistencia total menos la resistencia de `R2`
-
 # %%
 r_subcircuito = resistencia_total[0] - r2
 convert_to(r_subcircuito, [ohms]).n(5)
-
 # %% [markdown]
 # Gracias a `Ahkab` conocemos la corriente total y también el voltaje en el borne 2. Comprobemos con estos datos que la resistencia que acabamos de obtener es correcta.
-
 # %%
 v = resultados['op'].results._dict['V2']*volts
 i = -resultados['op'].results._dict['I(VDD)']*amperes 
@@ -1114,7 +1105,6 @@ resistencia = symbols('r')
 ley_ohm = Eq(v, i*resistencia)
 r_subcircuito = solve(ley_ohm, resistencia)
 convert_to(r_subcircuito[0], [ohms]).n(5)
-
 # %% [markdown]
 # Conocemos la resistencia de cada maya, ya que una es `R5` y la otra `R3`+`R4`. Esto es $R_{m1}=\mathrm{470\ \Omega}$ y $R_{m2}=\mathrm{1720\ \Omega}$, pero la la resistencia equivalente es inferior a la de cualquiera de las dos mallas. ¿Porque? ¿Que está pasando?
 # 
@@ -1127,17 +1117,19 @@ convert_to(r_subcircuito[0], [ohms]).n(5)
 # Vaya!!! la resistencia equivalente es justo la mitad del valor de las resistencias si esta son iguales. Esto es porque para que se cumpla la Ley de Kirchhoff, el flujo de electrones se tiene que repartir entre cada malla proporcionalmente a su resistencia, y como ya hemos visto por la ley de Ohm, esto sucede con una proporcionalidad lineal. Por lo que la inversa de la resistencia equivalente sera igual a la suma de las inversas de cada malla.
 # 
 # Comprobemos esto con los datos que tenemos del circuito.
-
 # %%
 inv_malla1 = 1/r5
 inv_malla2 = 1/(r3+r4)
 equiv = symbols('equiv')
 equiv = solve(1/equiv-inv_malla1-inv_malla2, equiv)
 convert_to(equiv[0], [ohms]).n(5)
-
 # %% [markdown]
-# Nos falta por comprobar los voltajes de cada nodo.
-
+# Nos falta por comprobar que los voltajes de cada nodo devueltos por `Ahkab` son correctos.
+# #### Voltaje en el nodo 2 según `Ahkab`:")
+# %%
+resultados['op'].results._dict['V2']*volts
+# %% [markdown]
+# #### Comprobamos el voltaje en el nodo 2 con Sympy:")
 # %%
 print("Voltaje en el nodo 2:")
 v = symbols('v')
@@ -1145,36 +1137,18 @@ intensidad = -resultados['op'].results._dict['I(VDD)']*amperes
 ley_ohm = Eq(v, intensidad*equiv[0])
 voltaje_V2 = solve(ley_ohm, v)
 convert_to(voltaje_V2[0], [volts]).n(3)
-
+# %% [markdown]
+# #### Voltaje en el nodo 3 según `Ahkab`:")
+# %%
+resultados['op'].results._dict['V3']*volts
+# %% [markdown]
+# #### Comprobamos el voltaje en el nodo 3 con Sympy:")
 # %%
 print("Voltaje en el nodo 3:")
 v = symbols('v')
 ley_ohm = Eq(v, intensidad_dummy2*r4)
 voltaje_V3 = solve(ley_ohm, v)
 convert_to(voltaje_V3[0], [volts]).n(3)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # %%
 # ###############################################################
@@ -1207,18 +1181,19 @@ r5 5 6 560
 
 # %%
 # Procesar circuito
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    'files\\resistencias_en_paralelo_2.cir')
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_paralelo_2.cir')
 # Separar datos netlist y simulaciones
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
-lista_de_análisis = ahkab.netlist_parser.parse_analysis(
-    netlist, análisis_en_netlist)
-resultados = ahkab.run(netlist, lista_de_análisis)
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 # Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
+# %% [markdown]
+#  Ejecutamos la simulación
+# %%
+resultados = ahkab.run(netlist, lista_de_análisis)
 
 # %% [markdown]
 # Imprimimos los resultados del análisis `.op`. 
@@ -1263,11 +1238,11 @@ r5 = 560*ohms
 # %% [markdown]
 # Puesto que no sabemos como esta afectando la pila que hay en serie con `R3`, es mas sencillo calcular la tensión en el nodo 2, restando a `v1` la diferencia de potencial entre extremos de `R1`.
 # 
-# La diferencia de potencial en V2 según `Ahkab` es:
+# #### La diferencia de potencial en V2 según `Ahkab` es:
 # %%
 resultados['op'].results._dict['V2']*volts
 # %% [markdown]
-# Comprobamos diferencia de potencial en V2 con Sympy:
+# #### Comprobamos diferencia de potencial en V2 con Sympy:
 # %%
 v = symbols('v')
 ley_ohm = Eq(v, intensidad_total*r1)
@@ -1277,23 +1252,39 @@ voltaje_V2 = v1-voltaje_R1[0]
 convert_to(voltaje_V2, [volts]).n(3)
 
 # %% [markdown]
-# Para calcula la diferencia de potencial en V3 aplicamos la *Ley de Ohm* para la corriente devuelta por `Ahkab` para la pila dummy y la suma de las resistencias `R4` y `R5`.
+# Para calcular la diferencia de potencial en V3 aplicamos la *Ley de Ohm* para la corriente devuelta por `Ahkab` en la pila dummy y la suma de las resistencias `R4` y `R5`.
 # 
-# La diferencia de potencial en V3 según `Ahkab` es:
+# #### La diferencia de potencial en V3 según `Ahkab` es:
 # %%
 resultados['op'].results._dict['V3']*volts
+# %% [markdown]
+# #### Comprobamos diferencia de potencial en V3 con Sympy:
 # %%
-print("La diferencia de potencial en V3 es:")
 v = symbols('v')
 ley_ohm = Eq(v, intensidad_malla2*(r4+r5))
 voltaje_V3 = solve(ley_ohm, v)
 convert_to(voltaje_V3[0], [volts]).n(3)
 
+# %% [markdown]
+# La diferencia de potencial en V4 es igual a la de la pila `V2`.
+# 
+# #### La diferencia de potencial en V3 según `Ahkab` es:
 # %%
-print("La diferencia de potencial en V4 es:")
+resultados['op'].results._dict['V4']*volts
+# %% [markdown]
+# #### La diferencia de potencial en V4 con Sympy:
+# %%
 voltaje_V4 = v2
 convert_to(voltaje_V4, [volts]).n(3)
 
+# %% [markdown]
+# Para calcular la diferencia de potencial en V5 aplicamos la *Ley de Ohm* para la corriente devuelta por `Ahkab` en la pila dummy y la resistencias `R5`.
+# 
+# #### La diferencia de potencial en V5 según `Ahkab` es:
+# %%
+resultados['op'].results._dict['V5']*volts
+# %% [markdown]
+# #### Comprobamos diferencia de potencial en V5 con Sympy:
 # %%
 print("La diferencia de potencial en V5 es:")
 v = symbols('v')
@@ -1305,94 +1296,167 @@ convert_to(voltaje_V5[0], [volts]).n(3)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # %%
-resistencia = symbols('r')
-ley_ohm = Eq(v1, intensidad_total*resistencia)
-resistencia_total = solve(ley_ohm, resistencia)
-print("La resistencia total del circuito es:")
-convert_to(resistencia_total[0], [ohms]).n(5)
+# ###############################################################
+# Circuito paralelo 3
+# ###############################################################
 
 # %% [markdown]
-# No podemos calcular la resistencia equivalente de las dos mallas en paralelo, usando las inversas de las resistencias, como lo hemos hecho en el circuito anterior, porque hay una pila con con tensión en una de las mallas y esto provoca que no haya la misma diferencia de potencial en las dos mallas.
+# ### **Análisis del tercer circuito**
 # 
-# Pero podemos calcularla conociendo la resistencia total y la resistencia de `r1`
+#  ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_paralelo_3_lab_fisica.svg?sanitize=true)
+# 
+# Definimos el netlist del tercer circuito paralero.
 
 # %%
-print("La resistencia equivalente de las dos malla en paralelo es:")
-equiv = resistencia_total[0] - r1
-convert_to(equiv, [ohms]).n(5)
-
-
+%%writefile "files\resistencias_en_paralelo_3.cir"
+* resistencias en paralelo
+v 1 0 vdc=9 type=vdc
+v1 1 2 vdc=0 type=vdc
+v2 1 3 vdc=0 type=vdc
+v3 1 4 vdc=0 type=vdc
+r1 2 0 10k
+r2 3 0 2k
+r3 4 0 1k
+.op
+.end
+# %% [markdown]
+# Procesamos el circuito con `Ahkab` y extraemos los datos.
+# %%
+# Procesar circuito
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_paralelo_3.cir')
+# Separar datos netlist y simulaciones
+netlist = circuito_y_análisis[0]
+análisis_en_netlist = circuito_y_análisis[1]
+# Extraer datos de simulaciones
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
+# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
+for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
+    analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
+# %% [markdown]
+#  Ejecutamos la simulación
+# %%
+resultados = ahkab.run(netlist, lista_de_análisis)
+# %% [markdown]
+# Imprimimos los resultados del análisis `.op`. 
+# %%
+print(resultados['op'])
+# %% [markdown]
+# Comprobamos que se cumple la Ley de Kirchhoff para las corrientes
+# 
+# La corriente total es:
+# %%
+intensidad_total = -resultados['op'].results._dict['I(V)']*amperes
+convert_to(intensidad_total, [amperes]).n(5)
+# %% [markdown]
+# La suma de las corrientes de las mallas es:
+# %%
+intensidad_malla1 = resultados['op'].results._dict['I(V1)']*amperes
+intensidad_malla2 = resultados['op'].results._dict['I(V2)']*amperes
+intensidad_malla3 = resultados['op'].results._dict['I(V3)']*amperes
+convert_to(intensidad_malla1+intensidad_malla2+intensidad_malla3, [amperes]).n(5)
 
 # %% [markdown]
-# ¿Como afecta la pila intermedia de $\mathrm{1.5\ v}$ a la resistencia equivalente de las dos mallas?
+# GENIAL !!! Se cumple la Ley de Kirchhoff
+
+# %% [markdown]
+# ### Comprobemos los resultados de `Ahkab` con Sympy
 # 
-# Puesto que en los extremos de las dos mallas, ambas tienen la misma tension
+# Inicializamos variables:
 
 # %%
-inv_malla1 = 1/r3
-inv_malla2 = 1/(r2+r4+r5)
+v = 9*volts
+r1 = 10*kilo*ohms
+r2 = 2*kilo*ohms
+r3 = 1*kilo*ohms
+
+# %% [markdown]
+# Calculemos la resistencia equivalente de las 3 malla del modo que hemos visto en el primer circuito.
+# $$ \frac{ 1 }{ R_{eqv} }=\sum_i^{n} \frac{ 1 }{ R_i } $$
+# %%
+inv_r1 = 1/r1
+inv_r2 = 1/r2
+inv_r3 = 1/r3
 equiv = symbols('equiv')
-equiv = solve(1/equiv-inv_malla1-inv_malla2, equiv)
+equiv = solve(1/equiv-inv_r1-inv_r2-inv_r3, equiv)
 convert_to(equiv[0], [ohms]).n(5)
-
-
-
 # %% [markdown]
-# Como ya sebemos, la resistencia total de cargas en serie es la suma de sus resistencias. Ahora que conocemos la resistencia total, la resistencia equivalente de las dos mallas formadas por `R3`, `R4` y `R5`, solo puede ser la resistencia total menos la resistencia de `R2`
-
+# Comprobemos si esto es cierto usando la Ley de Ohm. Calculamos la resistencia total usando la tensión conocida de la pila y la corriente devuelta por `Ahkab`.
 # %%
-r_subcircuito = resistencia_total[0] - r2
-convert_to(r_subcircuito, [ohms]).n(5)
-
-# %% [markdown]
-# Gracias a `Ahkab` conocemos la corriente total y también el voltaje en el borne 2. Comprobemos con estos datos que la resistencia que acabamos de obtener es correcta.
-
-# %%
-v = resultados['op'].results._dict['V2']*volts
-i = -resultados['op'].results._dict['I(VDD)']*amperes 
-resistencia = symbols('r')
-ley_ohm = Eq(v, i*resistencia)
-r_subcircuito = solve(ley_ohm, resistencia)
-convert_to(r_subcircuito[0], [ohms]).n(5)
-
-# %% [markdown]
-# Conocemos la resistencia de cada maya, ya que una es `R5` y la otra `R3`+`R4`. Esto es $R_{m1}=\mathrm{470\ \Omega}$ y $R_{m2}=\mathrm{1720\ \Omega}$, pero la la resistencia equivalente es inferior a la de cualquiera de las dos mallas. ¿Porque? ¿Que está pasando?
-# 
-# Veámoslo con números mas redondos. Supongamos que una pila de $\mathrm{10\ v}$ aporta una corriente de $\mathrm{1\ A}$ a un circuito con dos cargas en paralelo, de las que no conocemos sus resistencias, pero sabemos que son iguales. 
-# 
-# La resistencia equivalente sería $\frac{\mathrm{10\ v}}{\mathrm{1\ A}}=\mathrm{10\ \Omega}$
-# 
-# Para que se cumpla la Ley de Kirchhoff, por cada rama deben circular $\mathrm{0.5\ A}$, por tanto la resistencias serán de $\mathrm{20\ \Omega}$
-#
-# Vaya!!! la resistencia equivalente es justo la mitad del valor de las resistencias si esta son iguales. Esto es porque para que se cumpla la Ley de Kirchhoff, el flujo de electrones se tiene que repartir entre cada malla proporcionalmente a su resistencia, y como ya hemos visto por la ley de Ohm, esto sucede con una proporcionalidad lineal. Por lo que la inversa de la resistencia equivalente sera igual a la suma de las inversas de cada malla.
-# 
-# Comprobemos esto con los datos que tenemos del circuito.
-
-# %%
-inv_malla1 = 1/r5
-inv_malla2 = 1/(r3+r4)
 equiv = symbols('equiv')
-equiv = solve(1/equiv-inv_malla1-inv_malla2, equiv)
+ley_ohm = Eq(v, intensidad_total*equiv)
+equiv = solve(1/equiv-inv_r1-inv_r2-inv_r3, equiv)
 convert_to(equiv[0], [ohms]).n(5)
+# %% [markdown]
+# Perfecto coinciden !!!
+
+
+
+
+
 
 # %% [markdown]
-# Nos falta por comprobar los voltajes de cada nodo.
-
+# Para este circuito, puesto que todas las resistencias están en paralelo, no tiene mucho sentido comprobar los voltajes de las resistencias, puesto que para todas ellas va a ser el mismo que el de la pila. Por lo que, en este caso, comprobaremos que `Ahkab` nos ha devuelto las corrientes de forma correcta.
+# 
+#  #### La corriente que pasa por `R1` según `Ahkab` es:
 # %%
-print("Voltaje en el nodo 2:")
-v = symbols('v')
-intensidad = -resultados['op'].results._dict['I(VDD)']*amperes 
-ley_ohm = Eq(v, intensidad*equiv[0])
-voltaje_V2 = solve(ley_ohm, v)
-convert_to(voltaje_V2[0], [volts]).n(3)
-
+intensidad_malla1
+# %% [markdown]
+# #### Comprobamos la corriente que pasa por `R1` con Sympy:
 # %%
-print("Voltaje en el nodo 3:")
-v = symbols('v')
-ley_ohm = Eq(v, intensidad_dummy2*r4)
-voltaje_V3 = solve(ley_ohm, v)
-convert_to(voltaje_V3[0], [volts]).n(3)
+i = symbols('i')
+ley_ohm = Eq(v, i*r1)
+i_R1 = solve(ley_ohm, i)
+convert_to(i_R1[0], [amperes]).n(5)
+
+# %% [markdown]
+#  #### La corriente que pasa por `R2` según `Ahkab` es:
+# %%
+intensidad_malla2
+# %% [markdown]
+# #### Comprobamos la corriente que pasa por `R2` con Sympy:
+# %%
+i = symbols('i')
+ley_ohm = Eq(v, i*r2)
+i_R2 = solve(ley_ohm, i)
+convert_to(i_R2[0], [amperes]).n(5)
+
+# %% [markdown]
+#  #### La corriente que pasa por `R3` según `Ahkab` es:
+# %%
+intensidad_malla2
+# %% [markdown]
+# #### Comprobamos la corriente que pasa por `R3` con Sympy:
+# %%
+i = symbols('i')
+ley_ohm = Eq(v, i*r3)
+i_R3 = solve(ley_ohm, i)
+convert_to(i_R3[0], [amperes]).n(5)
 
 
 
@@ -1421,26 +1485,9 @@ convert_to(voltaje_V3[0], [volts]).n(3)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ########################################################
+#  # Circuitos en DC que evolucionan con el tiempo
+# ########################################################
 
 # %% [markdown]
 #  # Circuitos en DC que evolucionan con el tiempo
@@ -1454,17 +1501,79 @@ convert_to(voltaje_V3[0], [volts]).n(3)
 #  Al igual que antes, primero guardamos el circuito en un netlist externo:
 
 # %%
-get_ipython().run_cell_magic('writefile', '"condensador en continua.ckt"',
-                             '* Carga condensador\nv1 0 1 type=vdc vdc=6\nr1 1 2 1k\nc1 2 0 1m ic=0\n.op\n.tran tstep=0.1 tstop=8 uic=0\n.end')
+%%writefile "files\condensador_en_continua.ckt"
+* Carga condensador
+v1 0 1 type=vdc vdc=6
+r1 1 2 1k
+c1 2 0 1m ic=0
+.op
+.tran tstep=0.1 tstop=8 uic=0
+.end
 
 # %% [markdown]
-# > **Pregunta:** ¿qué significa el parámetro `ic=0`? ¿qué perseguimos con un análisis de tipo `.tran`?
+# > **Pregunta:** ¿qué significa el parámetro `ic=0`? 
+#
+# **Respuesta:** 
+# 
+# #### ¿qué significa el parámetro `ic=0`?
+#
+#  La directiva ic permite especificar las condiciones iniciales para el análisis transitorio. 
+# Fuente: *[IC set initial conditions](http://ltwiki.org/index.php?title=IC_set_initial_conditions)*
+# 
+# #### ¿qué perseguimos con un análisis de tipo `.tran`?
+# Una de las cualidades más interesantes de los condensadores para la electrónica, es que se oponen a los cambios bruscos tensión. Esta cualidad combinada con la de las bobinas, las cuales se oponen a los cambios bruscos de corriente, los convierten en componentes ideales para usarlos como filtros.
+# Que se opongan a los cambios de voltaje no significa que lo impidan, lo que sucede es que cuando se da un cambio abrupto de potencial, un condensador aumenta el tiempo que transcurre desde el estado de potencial inicial hasta que se alcanza el nuevo estado de potencial. Esto sucede tanto cuando el cambio de potencial se incrementa o se disminuye. Y el tiempo necesario depende de la capacidad del condensador que en el S.I. se expresa en *faradios* y su símbolo es $\mathrm{F}$.
+# 
+# Lo comentado implica que el estado del circuito va a cambiar a lo largo del tiempo cuando se dé un cambio de potencial y el análisis del tipo `.tran` nos va a permitir simular justamente eso. Lo configuraremos de modo que se reproduzca un cambio de potencial y capturaremos la evolución del circuito en el tiempo.
 #
 # Leamos el circuito:
 
 # %%
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    "condensador en continua.ckt")
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit("files\condensador_en_continua.ckt")
+
+
+
+# %% [markdown]
+# Procesamos el circuito con `Ahkab` y extraemos los datos.
+# %%
+# Procesar circuito
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_paralelo_3.cir')
+# Separar datos netlist y simulaciones
+netlist = circuito_y_análisis[0]
+análisis_en_netlist = circuito_y_análisis[1]
+# Extraer datos de simulaciones
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
+# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
+for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
+    analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
+# %% [markdown]
+#  Ejecutamos la simulación
+# %%
+resultados = ahkab.run(netlist, lista_de_análisis)
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+
 
 # %% [markdown]
 #  Separamos el netlist de los análisis y asignamos un fichero de almacenamiento de datos (`outfile`):
@@ -1472,8 +1581,7 @@ circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
 # %%
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
-lista_de_análisis = ahkab.netlist_parser.parse_analysis(
-    netlist, análisis_en_netlist)
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 lista_de_análisis[1]['outfile'] = "simulación_tran.tsv"
 
 # %% [markdown]
@@ -1510,12 +1618,10 @@ get_ipython().run_cell_magic('writefile', '"carrera en condensadores.ckt"',
 
 
 # %%
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit(
-    "carrera en condensadores.ckt")
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit("carrera en condensadores.ckt")
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
-lista_de_análisis = ahkab.netlist_parser.parse_analysis(
-    netlist, análisis_en_netlist)
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 lista_de_análisis[0]['outfile'] = "simulación tran carrera condensadores.tsv"
 resultados = ahkab.run(netlist, lista_de_análisis)
 
