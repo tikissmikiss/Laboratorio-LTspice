@@ -42,6 +42,9 @@ if platform.system() == "Windows":
         'alias', 'lts "C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b ')
 
 
+# ########################################################
+#  # Circuitos en AC 
+# ########################################################
 
 
 # %% [markdown]
@@ -100,7 +103,7 @@ rojo='tab:red'
 verde='tab:green'
 
 fig, ax_V = plot.subplots()
-plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$')
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - LTspice')
 ax_I = ax_V.twinx()  
 
 ax_V.tick_params(axis='y', labelcolor=verde)
@@ -133,7 +136,7 @@ verde='tab:green'
 
 fig, ax_V = plot.subplots()
 ax_V.set_xlim(0, 1/20)
-plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$')
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - LTspice')
 ax_I = ax_V.twinx()  
 
 ax_V.tick_params(axis='y', labelcolor=verde)
@@ -192,7 +195,7 @@ verde='tab:green'
 
 fig, ax_V = plot.subplots()
 ax_V.set_xlim(0, 1/20)
-plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$')
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - LTspice')
 ax_I = ax_V.twinx()  
 
 ax_V.tick_params(axis='y', labelcolor=verde)
@@ -216,9 +219,100 @@ plot.tight_layout()
 nSvg += 1
 fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
 # %% [markdown]
-# Ahora si, otra cosa es esto. Como podemos apreciar en la gráfica, evolucionan con una proporcionalidad inversa 10000:1, justamente el numero de ohmios que tiene un resistencia de $\mathrm{10\ k\Omega} como la de nuestro circuito.
-# %%
+# Ahora sí, otra cosa es esto. Como podemos apreciar en la gráfica, el voltaje y la corriente evolucionan con una proporcionalidad inversa de 10000:1, justamente el número de ohmios que tiene una resistencia de $\mathrm{10\ k\Omega}$ como la de nuestro circuito. ¿Que porqué coincide?, pues por la Ley de Ohm, para $\mathrm{10\ k\Omega}$ hacen falta $\mathrm{10\ kV}$ para tener $\mathrm{1\ A}$.
+
+
 # %% [markdown]
-# # Resumen de lo que se pide
+# ### Ahora realicemos la simulación con Ahkab
+# Lo primero es adaptar el netlist
+
+# %%
+%%writefile "files\corriente_alterna.ckt"
+* Circuito alterna
+V1 1 0 type=sin vo=0 va=120 freq=60
+R1 0 1 10k
+.tran tstep=0.0001 tstart=0 tstop=0.05
+.end
+
+# %% [markdown]
+# ### Procesamos el circuito con `Ahkab` y extraemos los datos.
+
+# %%
+# Procesar circuito
+circuito_y_análisis = ahkab.netlist_parser.parse_circuit("files\corriente_alterna.ckt")
+# Separar datos netlist y simulaciones
+netlist = circuito_y_análisis[0]
+análisis_en_netlist = circuito_y_análisis[1]
+# Extraer datos de simulaciones
+lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
+# Establecer condiciones óptimas para los análisis `.dc` y/o `.tran` si lo hay.
+for análisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
+    análisis['outfile'] = files_directory + "simulación_" + análisis['type'] + ".tsv"
+# %% [markdown]
+#  Ejecutamos la simulación
+# %%
+resultados = ahkab.run(netlist, lista_de_análisis)
+# %%
+tiempo = resultados['tran']['T']
+vac = resultados['tran']['V1']
+f = lambda x: -x if x < 0 else x
+i_R1 = resultados['tran']['I(V1)']
+# i_R1 = list(map(f, i_R1))
+
+plot.rcParams['figure.figsize'] = [6.4*1.9, 4.8]
+plot.rcParams['font.size'] = 12
+rojo='tab:red'
+verde='tab:green'
+
+fig, ax_V = plot.subplots()
+# ax_V.set_xlim(0, 1/20)
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - Ahkab')
+ax_I = ax_V.twinx()  
+
+ax_V.tick_params(axis='y', labelcolor=verde)
+ax_I.tick_params(axis='y', labelcolor=rojo)
+
+ax_V.set_xlabel('Tiempo (s)')
+ax_V.set_ylabel('Voltaje (V)', color=verde)
+ax_I.set_ylabel('Corriente (A)', color=rojo)
+
+line_V, = ax_V.plot(tiempo, vac)
+line_V.set_label('Corriente R1')
+line_V.set_c(verde)
+
+line_I, = ax_I.plot(tiempo, i_R1)
+line_I.set_label('Voltaje VAC')
+line_I.set_c(rojo)
+
+plot.grid(True)
+plot.tight_layout()
+nSvg += 1
+fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# %% [markdown]
+# ## CONCLUSION
+# 
+# <<<< Cuando se em ocurra >>>>
+# 
+# 
 # Volved a realizar todos los ejercicios y demos en vuestro propio notebook, explicando con vuestras palabras cada paso, cada gráfica y respondiendo a cada pregunta. Cuidad la belleza, coherencia, narración, explicaciones y gráficas. Todas las gráficas se han pintado con Matplotlib, que es una biblioteca extendidísima en ciencia y tecnología. Es muuuuy bueno que la conozcáis. [Aquí](https://matplotlib.org/tutorials/introductory/pyplot.html) tenéis muchos ejemplos.
 

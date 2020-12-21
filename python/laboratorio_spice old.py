@@ -1,11 +1,33 @@
+# To add a new cell, type '# %%'
+# To add a new markdown cell, type '# %% [markdown]'
+# %%
+from sympy import solve, symbols, Eq
+from sympy.physics.units import kilo
+from sympy.physics.units import convert_to
+from sympy.physics.units import ohms, amperes, volts
+import ltspice
+import platform
+import ahkab
+import pylab as plt
+from IPython import get_ipython
+# Extras
+import matplotlib.pyplot as plot
+from os import mkdir
+from os.path import isdir
+from shutil import rmtree
+from IPython.display import set_matplotlib_formats
+# Plotear en svg
+files_directory = "files\\"
+fig_directory = "..\\resource\\figures\\"
+set_matplotlib_formats('svg')
+
 # %% [markdown]
-# # LABORATORIO SIMULACIÓN SPICE
 #
 #  # Objetivo del laboratorio
 #  El objetivo de la presenta práctica es conocer el estándar de simulación de circuitos [SPICE](http://bwrcs.eecs.berkeley.edu/Classes/IcBook/SPICE) y realizar pequeñas simulaciones en corriente continua con el mismo. SPICE es una forma elegante y sencilla de codificar circuitos eléctricos de manera que puedan ser procesados por un ordenador. Mediante un sencillo lenguaje podemos definir resistencias, fuentes de alimentación, etc., las conexiones entre ellos y los resultados que deseamos obtener.
 #
 #  # El estándar SPICE
-#  **SPICE** es una abreviación de *Simulation Program with Integrated Circtuit Emphasis*.
+#  **SPICE** es una abreviabiación de *Simulation Program with Integrated Circtuit Emphasis*.
 #  Se trata básicamente de un método estándar para describir circuitos usando texto plano en
 #  lugar de una representación gráfica (o *esquemática*). A esta descripción en texto se
 #  la llama también **netlist** y básicamente se corresponde con la *lista* de los componentes del circuito y cómo estos están conectados entre sí, es decir, de los nodos de unión.
@@ -18,71 +40,18 @@
 #
 # > **Pregunta:** Enumera todos los intérprete de Spice que puedas encontrar. Crea una tabla en Markdown con varias columnas (para el nombre, fabricante, versión actual, licencia y alguna característica sobresaliente). Aquí tienes un ejemplo del que puedes partir y seguir completando:
 #
-# |Intérprete|Licencia|Fabricante|Características|
-# |-----------|------------------------------|---------------------------------|----------------|
-# |Ahkab|GPL|Giuseppe Venturini|Basado en Python|
-# |LTspice|Gratuito|Linear Technology, Analog Devices||
-# |PSpice|Propietaria|Cadence Design Systems||
-# |Orcad|Propietaria|Cadence Design Systems||
-# |ngspice|Licencia BSD|Software libre||
-# |macspice|Licencia BSD|Charles D. H. Williams||
-# |spice|Licencia BSD|Donald Pederson y Larry Nagel.|Es el estándar|
-# |Multisim|Proprietary EULA|National Instruments||
-# |Oregano|GNU General Public License|Richard Hult||
-
-
-
-# %% [markdown]
-# |Unidad|Magnitud|
-# |-|-|
-# |Voltio ($\mathrm{V}$)|Diferencia de potencial|
-# |Amperio ($\mathrm{A}$)|Intensidad |
-# |Ohmio ($\Omega$)|Resistencia eléctrica|
-# |vatio ($\mathrm{W}$)|Potencia eléctrica|
-# |Culombio ($\mathrm{C}$)|Carga eléctrica|
-# |faradios ($\mathrm{F}$)|Capacidad de carga|
-# |Henrio ($\mathrm{H}$)|Inductancia|
-# |Hercio ($\mathrm{Hz}$)|Frecuencia|
-# |Siemens ($\mathrm{S}$)|Conductividad eléctrica|
-
-
-# |PHP            |Python        |Javascript  |Java                    | Otros            |
-# |----           |----          |---         |---                     | ---              |
-# |   Laravel     | Django       |Express.js  | Spring                 | Ruby - Sinatra   |
-# |   CodeIgniter | Pyramid      |React.js    | Dropwizard             | C\# - ReactiveUI |
-# |   Symfony     | Web2py       |Angular.js  | GWT                    |                  |
-# |   CakePHP     | CubicWeb     |Node.js     | JSF (JavaServer Faces) |                  |
-# |   Yii         | Dash         |Deno.Js     | Struts                 |                  |
-# |   Codeigniter | CherryPy     |Polymer.Js  |                        |                  |
-# |               | Tornado      |Ember.Js    |                        |                  |
-# |               | SymPy        |            |                        |                  |
-# |               | Matplotlib   |            |                        |                  |
-# |               | SciPy        |            |                        |                  |
-# |               | TensorFlow   |            |                        |                  |
-# |               |              |            |                        |                  |
-# |               |              |            |                        |                  |
-# |               |              |            |                        |                  |
-# |               |              |            |                        |                  |
-# |               |              |            |                        |                  |
-# |               |              |            |                        |                  |
-# |               |              |            |                        |                  |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# | Intérprete  | Licencia | Fabricante             | Características  |
+# | ----------- | -------- | ---------------------- | ---------------- |
+# | Ahkab       | GPL      | Giuseppe Venturini     | Basado en Python |
+# | LTspice     |          |                        |                  |
+# | PSpice      |          |                        |                  |
+# | Orcad       |          |                        |                  |
+# | ngspice     |          |                        |                  |
+# | macspice    |          |                        |                  |
+# | spice       |          |                        |                  |
+# | Multisim    |          | National Instruments   |                  |
+#
+#
 # %% [markdown]
 #
 #  > **Pregunta:** ¿Qué comparación puedes efectuar entre C y Spice como estándares (lenguajes) y sus respectivas implementaciones en software? ¿Qué implementaciones reales (compiladores) del lenguaje C conoces?
@@ -122,7 +91,7 @@
 #  A continuación de indicar el elemento eléctrico, tenemos que informar a Spice cuáles
 #  son los puntos de unión tanto a un lado como al otro del elemento.
 #  Así es como Spice sabe qué está conectado a qué: porque comparten un **punto**
-#  (o **nodo**, aunque este término se reserva sobre todo a uniones de más de dos elementos)
+#  (o **nodo**, aunque este término se reserva sobretodo a uniones de más de dos elementos)
 #  que hemos señalizado correctamente. Para nombrar nodos, lo mejor es emplear una
 #  numeración secuencial: 0...n. **La enumeración de los puntos de unión es completamente
 #  a nuestro criterio**.
@@ -134,8 +103,8 @@
 #  ```
 #
 #  **Sólo es necesario seguir un criterio**: en el caso de una
-#  fuente de alimentación, el nodo que pondremos primero será
-#  aquel que está más cerca del *borne* positivo. Ejemplo:
+#  fuente de alimentación, el nodo que pondremos primero será
+#  aquel que está más cerca del *borne* positivo. Ejemplo:
 #
 #  ```spice
 #  * Para una fuente indicamos primeramente conexión a nodo positivo.
@@ -145,7 +114,7 @@
 # En el *caso de LTspice* no es necesario indicar los parámetros `type=vdc` y `vdc=X`, sino que si no se especifica nada, se supone que el último valor es el del voltaje a corriente continua:
 #
 # ```spice
-# * Especificación de una fuente de alimentación de 10 V en corriente continua en el caso de LTspice
+# * Especificación de una fuente de alimentación de 10 V en corrient continua en el caso de LTspice
 # v 0 1 10
 # ```
 #
@@ -155,17 +124,17 @@
 #
 #  ## Unidades en SPICE
 #
-#  Las unidades de las magnitudes características del circuito son siempre [unidades
-#  del Sistema Internacional](https://en.wikipedia.org/wiki/SI_electromagnetism_units) y no es necesario indicarlo explícitamente en el netlist.
+#  Las unidades de las magnitudes características del circuito son siempre [unidades
+#  del Sistema Internacional](https://en.wikipedia.org/wiki/SI_electromagnetism_units) y no es necesario indicarlo explícitamente en el netlist.
 #
-#  La forma de especificar múltiplos de estas cantidades es añadiendo una letra.
-#  Básicamente las que nos interesan y las que suelen aparecer mayoritariamente son `k` para "kilo-," `m` para "mili?" y `u` para "micro?".
+#  La forma de especificar múltiplos de estas cantidades es añadiendo una letra.
+#  Básicamente las que nos interesan y las que suelen aparecer mayoritariamente son `k` para "kilo-," `m` para "mili?" y `u` para "micro?".
 
 # %% [markdown]
 #
 #  > **Pregunta:** Crea una tabla en Markdown con todos los prefijos de múltiplos que puedas, su abreviatura y su equivalencia numérica.
 #
-#  En el caso de las fuentes de alimentación hemos de especificar si se trata de corriente continua (`vdc`) o alterna (`ac`).
+#  En el caso de las fuentes de alimentación hemos de especificar si se trata de corriente contínua (`vdc`) o alterna (`ac`).
 #
 #  ```
 #  * Una resistencia de 5 Ohmios
@@ -207,8 +176,8 @@
 #
 #  ## Comandos SPICE para circuitos en corriente continua
 #
-#  Además de la descripción del circuito, hemos de indicar al intérprete de Spice qué
-#  tipo de análisis queremos realizar en sobre el mismo y cómo queremos presentar
+#  Además de la descripción del circuito, hemos de indicar al intérprete de Spice qué
+#  tipo de análisis queremos realizar en sobre el mismo y cómo queremos presentar
 #  la salida de la simulación. Los comandos en Spice empiezan por un `.` y suelen
 #  escribirse justo al final del circuito, pero antes del comando `.end`.
 #
@@ -230,7 +199,7 @@
 #
 #  Veamos los principales comandos de simulación:
 #
-#  - `.op` es el comando más sencillo que podemos emplear en. Devuelve el voltaje e intensidad en cada ramal y componente del circuito. Este comando no necesita parámetros.
+#  - `.op` es el comando más sencillo que podemos emplear en. Devuelve el voltaje e intensidad en cada ramal y componente del circuito. Este comando no necesita parámetros.
 #  - `.dc` es uy parecido al comando `.op` pero nos permite cambiar el valor del voltaje de una fuente de alimentación en pasos consecutivos entre el valor A y el valor B.
 #  En el caso de que la fuente tuviera asignada ya un valor para su voltaje, este sería ignorado. Ejemplo:
 #
@@ -246,11 +215,11 @@
 #  .dc v2a start=0 stop=10 step=2
 #  ```
 #
-#  - El comando `.tran` realiza un análisis en el tiempo de los parámetros del
-#  circuito. Si no se emplea la directiva `uic` (*use initial conditions*) o esta es igual a cero, este análisis se realiza desde el punto estable de funcionamiento del circuito hasta un tiempo `tfinal`.
-#  y en intervalos `tstep`. Si empleamos un valor distinto para parámetro `uic`,
-#  entonces se hará uso de las condiciones iniciales definidas para cada componente
-#   (típicamente `ic=X` en el caso de los condensadores, que da cuenta de la carga inicial que estos pudieran tener).
+#  - El comando `.tran` realiza un análisis en el tiempo de los parámetros del
+#  circuito. Si no se emplea la directiva `uic` (*use initial conditions*) o esta es igual a cero, este análisis se realiza desde el punto estable de funcionamiento del circuito hasta un tiempo `tfinal`.
+#  y en intervalos `tstep`. Si empleamos un varlor distinto para parámetro `uic`,
+#  entonces se hará uso de las condiciones iniciales definidas para cada componente
+#   (típicamente `ic=X` en el caso de los condensadores, que da cuenta de la carga incial que estos pudieran tener).
 #
 #
 #  ```
@@ -264,7 +233,7 @@
 #  > **Pregunta**: El parámetro `uic` puede tener varios valores y cada uno significa una cosa. Detállalo usando un celda Markdown y consultando la [documentación de Ahkab](https://buildmedia.readthedocs.org/media/pdf/ahkab/latest/ahkab.pdf).
 #
 #  ## Intérprete SPICE que vamos a usar: Ahkab
-#  Tras un estándar siempre hay una o varias implementaciones. Ahkab no deja de ser una implementación más en Python del estándar Spice.
+#  Tras un estándar siempre hay una o varias implementaciones. Ahkab no deja de ser una implmentación más en Python del estándar Spice.
 #  > **Pregunta:** Comenta las distintas implementaciones de lenguajes y estándares que conozcas. Hazlo usando una tabla en Markdown. [Aquí](https://www.markdownguide.org/extended-syntax/#tables) tienes un poco de ayuda (aunque antes ya se ha puesto el ejemplo de una tabla).
 #
 #  > **Pregunta:** Describe brevemente este software (creador, objetivos, versiones, licencia, características principales, dependencias, etc.).
@@ -283,7 +252,7 @@
 #  $ source /usr/local/Caskroom/miniconda/base/bin/activate (en el caso de macOS)
 #  ```
 #
-# En el caso de Windows tienes que tener en el PATH el directorio donde se encuentre el comando `conda` (visita la sección de [Environment Variables](https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10) del [Panel de Control](https://www.digitalcitizen.life/8-ways-start-control-panel-windows-10)). Si has instalado Anaconda con [está opción](https://docs.anaconda.com/_images/win-install-options.png) marcada, ya no tienes que preocuparte por ello.
+# En el caso de Windows tienes que tener en el PATH el directorio donde se encuentre el comando `conda` (visita la sección de [Environment Variables](https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10) del [Panel de Control](https://www.digitalcitizen.life/8-ways-start-control-panel-windows-10)). Si has instalado Anaconda con [esta opción](https://docs.anaconda.com/_images/win-install-options.png) marcada, ya no tienes que preocuparte por ello.
 #
 # En el caso de usar Visual Studio Code, este puede encontrar automáticamente la distintas distribuciones de Python que tengamos instaladas y si abrimos un terminal, este se adaptará automáticamente al entorno Python que hayamos seleccionado. La configuración de Python en VS Code está bien explicada su [documentación](https://code.visualstudio.com/docs/python/python-tutorial).
 #
@@ -304,7 +273,7 @@ get_ipython().system('pip install ahkab')
 #
 #  Como siempre, una vez instalado cualquier framework para Python, ya lo podemos utilizar, tanto desde el [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop) como desde un entorno Jupyter (Jupyter, [Jupyterlab](http://jupyterlab.readthedocs.io/en/stable/), VS Code o nteract). Recuerda que para usar el kernel Python (que viene con Anaconda) desde nteract debes seguir las instrucciones que se indican en su [documentación oficial](https://nteract.io/kernels).
 # %% [markdown]
-# Como vamos a pintar algunas gráficas, necesitamos instalar [matplotlib](https://matplotlib.org). Al igual que con Ahkab, esto lo podemos hacer directamente desde este mismo notebook. Si hemos usado Anaconda:
+# Como vamos a pintar algunas gráficas, necesitamos instlar [matplotlib](https://matplotlib.org). Al igual que con Ahkab, esto lo podemos hacer directamente desde este mismo notebook. Si hemos usado Anaconda:
 
 # %%
 # ################################################################
@@ -329,7 +298,7 @@ get_ipython().system('pip install ahkab')
 # %% [markdown]
 #  > **Pregunta:** ¿Qué es y para qué sirve PyLab?
 #
-#  ## Circuitos sencillos para trabajar con la ley de Ohm:
+#  ## Circuitos sencillos para trabjar con la ley de Ohm:
 #
 #  La *mal llamada* ley de Ohm reza que el voltaje (la *energía por unidad de carga*) que se disipa en un tramo de un circuito eléctrico es equivalente a la intensidad ($I$) de la corriente (es decir, cuántos electrones circulan por unidad de tiempo) por la resistencia del material ($R$) en el que está desplazándose dicha corriente. Matemáticamente:
 #
@@ -384,7 +353,7 @@ mkdir(fig_directory)
 
 # %% [markdown]
 # ## Circuito simple (Fuente + carga)
-# El primer circuito a analizar es el circuito más simple que se puede encontrar, que consiste en una fuente de alimentación con un carga representada con una resistencia.
+# El primer circuito a analizar es el circuito mas simple que se puede encontrar, que consiste en una fuente de alimentación con un carga representada con una resistencia.
 #
 # ![](https://raw.githubusercontent.com/pammacdotnet/spicelab/master/primer%20circuito.svg?sanitize=true)
 
@@ -417,7 +386,7 @@ v1 N001 0 type=vdc vdc=9
 circuito_y_análisis = ahkab.netlist_parser.parse_circuit(files_directory + 'circuito_sencillo.sp')
 
 # %% [markdown]
-# El método `ahkab.netlist_parser.parse_circuit()` ha creado una lista en cuya primera posición se ha guardado la lista de componentes y sus conexiones, y en la segunda posición, la listas de análisis que se quieren realizar durante la simulación.
+# El método `ahkab.netlist_parser.parse_circuit()` ha creado una lista en cuya primera posición se ha guardado la lista de componentes y sus conexiones, y en la segunda posición, la listas de analisis que se quieren realizar durante la simulación.
 #
 # Extraemos estos datos a sendas variables.
 
@@ -425,7 +394,7 @@ circuito_y_análisis = ahkab.netlist_parser.parse_circuit(files_directory + 'cir
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 
-# Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de análisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de análisis a realizar (dc, tran, etc.) y los parámetros con los que se realizará cada análisis.
+# Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de analisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de analisis a realizar (dc, tran, etc.) y los parametros con los que se realizará cada analisis.
 
 # %%
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
@@ -459,11 +428,11 @@ lista_de_análisis[1]['outfile'] = "simulación_dc.tsv"
 #  ```python
 # [...][0]
 #  ```
-# Se deduce que se está haciendo referencia a la primera posición de una estructura indexabe (`foo[0]`), como un vector, una lista, etc. Por tanto, el primer corchete debe de estar refiriéndose a una lista o un vector. 
+# Se deduce que se esta haciendo referencia a la primera posición de una estructura indexable (`foo[0]`), como un vector, una lista, etc. Por tanto, el primer corchete debe de estar refiriéndose a una lista o un vector. 
 #  ```python
 # vector = [i for i, d in enumerate(lista_de_análisis) if "dc" in d.values()]
 #  ```
-# Más arriba, al conociéndose de antemano que el análisis que estamos tratando va a devolver en la posición "`1`" un análisis tipo "`dc`", se ha hardcodeado la asignación de este modo:
+# Más arriba, al conociéndose de antemano que el analisis que estamos tratando va ha devolver en la posición "`1`" un analisis tipo "`dc`", se ha hardcodeado la asignación de este modo:
 #  ```python
 # lista_de_análisis[1]['outfile'] = "simulación_dc.tsv"
 #  ```
@@ -472,11 +441,11 @@ lista_de_análisis[1]['outfile'] = "simulación_dc.tsv"
 # indice = [i for i, d in enumerate(lista_de_análisis) if "dc" in d.values()][0]
 # lista_de_análisis[ indice ]['outfile'] = "simulación_dc.tsv"
 #  ```
-# Incluso en una única línea:
+# Incluso en una única linea:
 #  ```python
 # lista_de_análisis[ [i for i, d in enumerate(lista_de_análisis) if "dc" in d.values()][0] ]['outfile'] = "simulación_dc.tsv"
 #  ```
-# Simulemos esto para comprobarlo.
+# Simulemos esto para comprobalo.
 
 # %%
 # Creamos una lista de 10 diccionarios
@@ -507,18 +476,18 @@ print("\n¿Es [i for i, d in enumerate(lista_de_análisis) if \"dc\" in d.values
 print("Imprimimos el resultado:")
 print([i for i, d in enumerate(lista) if "dc" in d.values()])
 
-# ¿Cuál es el índice del primer análisis del tipo \"dc\"?
-print("\n¿Cuál es el índice del primer análisis del tipo \"dc\"?")
+# ¿Cual es el índice del primer análisis del tipo \"dc\"?
+print("\n¿Cual es el índice del primer análisis del tipo \"dc\"?")
 print("[i for i, d in enumerate(lista) if \"dc\" in d.values()][0]")
 print([i for i, d in enumerate(lista) if "dc" in d.values()][0])
 
-# ¿Cuál es el índice del primer análisis del tipo \"tran\"?
-print("\n¿Cuál es el índice del primer análisis del tipo \"dc\"?")
+# ¿Cual es el índice del primer análisis del tipo \"tran\"?
+print("\n¿Cual es el índice del primer análisis del tipo \"dc\"?")
 print("[i for i, d in enumerate(lista) if \"tran\" in d.values()][0]")
 print([i for i, d in enumerate(lista) if "tran" in d.values()][0])
 
-# Usemos la sentencia de una línea deducida en la celada anterior
-print("\nUsemos la sentencia de una línea deducida en la celada anterior")
+# Usemos la sentencia de una linea deducida en la celada anterior
+print("\nUsemos la sentencia de una linea deducida en la celada anterior")
 print("lista[ [i for i, d in enumerate(lista) if \"dc\" in d.values()][0] ]['outfile'] = \"simulación_dc.tsv\"")
 lista[ [i for i, d in enumerate(lista) if "dc" in d.values()][0] ]['outfile'] = "simulación_dc.tsv"
 print("lista[ [i for i, d in enumerate(lista) if \"tran\" in d.values()][0] ]['outfile'] = \"simulación_tran.tsv\"")
@@ -532,7 +501,7 @@ for i in range(10):
 print("\n\t**** FUNCIONA !!! ****")
 
 # %% [markdown]
-# > Podríamos haber usado `d` en vez de `i` para recuperar todos los diccionarios con `dc` o `tran` y añadir el archivo a todos los análisis, de este modo:
+# > Podriamos haber usado `d` en vez de `i` para recuperar todos los diccionarios con `dc` o `tran` y añadir el archivo a todos los analisis, de este modo:
 # ```
 # for analisis in [`d` for i, d in enumerate(lista) if "dc" in d.values()]:
 #     analisis['outfile'] = "simulación dc indice " + str(analisis['indice']) + ".tsv"
@@ -540,21 +509,21 @@ print("\n\t**** FUNCIONA !!! ****")
 # Lo comprobamos sobre la misma lista que ya tenemos
 
 # %%
-print("Así teníamos la lista:")
+print("Así teniamos la lista:")
 for i in range(10):
     print(lista[i])
 
-# Añadir el archivo a todos los análisis del ambos tipos 
-print("\nAñadir el archivo a todos los análisis del ambos tipos")
+# Añadir el archivo a todos los analisis del ambos tipos 
+print("\nAñadir el archivo a todos los analisis del ambos tipos")
 for analisis in [d for i, d in enumerate(lista) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = "simu_" + analisis['type'] + "_indice_" + str(analisis['indice']) + ".tsv"
-print("La lista queda así:")
+print("La lista queda asi:")
 for i in range(10):
     print(lista[i])
  
-print("\nPodemos observar que se han añadido los archivos a los que no lo tenían y han cambiado los que si lo tenían") 
+print("\nPodemos observar que se han añadido los archivos a los que no lo tenian y han cambiado los que si lo tenian") 
 
-print("\n\t**** TAMBIÉN FUNCIONA !!! ****")
+print("\n\t**** TAMBIEN FUNCIONA !!! ****")
 
 # %% [markdown]
 # ¿Funciona? 
@@ -597,9 +566,9 @@ plt.plot(resultados['dc']['V1'], resultados['dc']['I(V1)'], label="Voltaje (V1)"
 # %% [markdown]
 # > **Respuesta:**  
 #  
-# > La gráfica está mostrando diferencia de potencia (V) en el eje x, y corriente o intensidad (A) en el eje y.
+# > La gráfica esta mostrando diferencia de potencia (V) en el eje x, y corriente o intensidad (A) en el eje y.
 # 
-# > Si tomamos los valores como absolutos, puesto que el signo solo representa el sentido del flujo de los electrones, se ve como conforme aumenta la diferencia de potencial aumenta linealmente la corriente, y esto, según la Ley de Ohm debería de pasar a razón de la carga o resistencia. Puesto que la carga de nuestro circuito ofrece una resistencia de $\mathrm{100\Omega}$, para, por ejemplo $\mathrm{4v}$, según la ley de Ohm tendríamos:
+# > Si tomamos los valores como absolutos, puesto que el signo solo representa el sentido del flujo de los electrones, se ve como conforme aumenta la diferencia de potencial aumenta linealmente la corriente, y esto, según la Ley de Ohm debería de pasar a razón de la carga o resistencia. Puesto que la carga de nuestro circuito ofrece una resistencia de $\mathrm{100\Omega}$, para, por ejemplo $\mathrm{4v}$, según la ley de Ohm tendriamos:
 # $$\mathrm{V}=\mathrm{R}\cdot\mathrm{I}$$
 # $$\mathrm{I}=\frac{\mathrm{V}}{\mathrm{R}}=\frac{\mathrm{4v}}{\mathrm{100\Omega}}=\mathrm{0.04A}$$
 # 
@@ -625,7 +594,7 @@ print(resultados['op'].results)
 # %% [markdown]
 # > **Respuesta:**  
 #  
-# > Puesto que la carga de nuestro circuito ofrece una resistencia de $\mathrm{100\Omega}$, para $\mathrm{9v},$ según la ley de Ohm tendríamos:
+# > Puesto que la carga de nuestro circuito ofrece una resistencia de $\mathrm{100\Omega}$, para $\mathrm{9v},$ según la ley de Ohm tendriamos:
 # $$\mathrm{V}=\mathrm{R}\cdot\mathrm{I}$$
 # $$\mathrm{I}=\frac{\mathrm{V}}{\mathrm{R}}=\frac{\mathrm{9v}}{100\mathrm{\Omega}}=\mathrm{0.09A}$$
 # 
@@ -677,7 +646,7 @@ v1 0 1 9
 # %% [markdown]
 # Ejecutamos LTspice con el circuito (de la misma manera que antes habíamos hecho con Ahkab).
 # 
-# Pare ello usaremos el alias de ejecutable y le pasamos por parámetro el archivo que acabamos de crear.
+# Pare ello usaremos el alias de ejecutable y le pasamos por parametro el archivo que acabamos de crear.
 
 # %%
 lts "files\circuito_sencillo.net"
@@ -711,7 +680,7 @@ v1 0 1 9
 lts "files\circuito_sencillo.net"
 
 # %% [markdown]
-# Al ejecutar esta simulación para el análisis `.dc`, el fichero `.raw` con los resultados es muchísimo más extenso. Para leer este fichero, y además, extraer los valores para la gráfica vamos a usar el paquete [ltspice de Python](https://github.com/DongHoonPark/ltspice_pytool), el cual se puede  instalar directamente desde Jupyter
+# Al ejecutar esta simulación para el análisis `.dc`, el fichero `.raw` con los resultados es muchísimo mas extenso. Para leer este fichero, y ademas, extraer los valores para la gráfica vamos a usar el paquete [ltspice de Python](https://github.com/DongHoonPark/ltspice_pytool), el cual se puede  instalar directamente desde Jupyter
 
 # %%
 get_ipython().system('pip install ltspice')
@@ -765,7 +734,7 @@ R3 3 1 5k
 circuito_y_análisis = ahkab.netlist_parser.parse_circuit('files\\resistencias_en_serie.net')
 
 # %% [markdown]
-# El método `ahkab.netlist_parser.parse_circuit()` ha creado una lista en cuya primera posición se ha guardado la lista de componentes y sus conexiones, y en la segunda posición, la listas de análisis que se quieren realizar durante la simulación.
+# El método `ahkab.netlist_parser.parse_circuit()` ha creado una lista en cuya primera posición se ha guardado la lista de componentes y sus conexiones, y en la segunda posición, la listas de analisis que se quieren realizar durante la simulación.
 #
 # Extraemos estos datos a sendas variables.
 
@@ -774,14 +743,14 @@ netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 
 # %% [markdown]
-# Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de análisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de análisis a realizar (dc, tran, etc.) y los parámetros con los que se realizará cada análisis.
+# Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de analisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de analisis a realizar (dc, tran, etc.) y los parametros con los que se realizará cada analisis.
 
 # %%
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
 print(lista_de_análisis)
 
 # %% [markdown]
-# Podemos usar lo que hemos definido durante el circuito anterior para añadir el archivo temporal `.tsv` si fuera necesario, aunque ahora no haría falta, puesto que no hemos establecido ningún análisis `.dc` ni `.tran`
+# Podemos usar lo que hemos definido durante el circuito anterior para añadir el archivo temporal `.tsv` si fuera necesario, aunque ahora no haría falta, puesto que no hemos establecido ningún analisis `.dc` ni `.tran`
 # %%
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
@@ -793,7 +762,7 @@ for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values
 resultados = ahkab.run(netlist, lista_de_análisis)
 
 # %% [markdown]
-# Imprimimos los resultados del análisis `.op`:
+# Imprimos los resultados del análisis `.op`:
 
 # %%
 print(resultados['op'])
@@ -854,7 +823,7 @@ print(resultados['op'])
 #
 # `+Vcc` )---**1**---( `R3` )---**3**---( `R2` )---**2**---( `R1` )---**0**---( `Gnd`
 # 
-# Aquí el borne 2 tiene entre él y masa únicamente a `R1`. Según nuestros cálculos la caída de potencial en `R1` es de $=\mathrm{1.5v}$ y sí que coincide con lo que dice `Ahkab` para `V2`, que es $\mathrm{1.5v}$ 
+# Aquí el borne 2 tiene entre él y masa únicamente a `R1`. Según nuestros cálculos la caída de potencial en `R1` es de $=\mathrm{1.5v}$ y si que coincide con lo que dice `Ahkab` para `V2`, que es $\mathrm{1.5v}$ 
 
 # %% [markdown]
 # ### Entonces, ¿Dónde está el error?
@@ -866,7 +835,7 @@ print(resultados['op'])
 # 
 #  `+Vcc` )---**1**---( `R1` )---**3**---( `R2` )---**2**---( `R3` )---**0**---( `Gnd`
 #
-# Pero además, para el cálculo hemos interpretado que entre el borne 2 y masa había dos resistencias, por lo que el orden correcto de las resistencias y de las conexiones para que se ajuste a los cálculos sería este:
+# Pero ademas, para el cálculo hemos interpretado que entre el borne 2 y masa había dos resistencias, por lo que el orden correcto de las resistencias y de las conexiones para que se ajuste a los cálculos sería este:
 # 
 #  `+Vcc` )---**1**---( `R1` )---**2**---( `R2` )---**3**---( `R3` )---**0**---( `Gnd`
 
@@ -905,7 +874,7 @@ netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
-# Establecer condiciones óptimas para los análisis `.dc` y/o `.tran` si lo hay.
+# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
 
@@ -919,7 +888,7 @@ print(resultados['op'])
 
 # %% [markdown]
 # ### FANTÁSTICO !!!
-# Ahora sí coinciden los resultados. Podemos ver que `V2` corresponde con la caída calculada. Además, también V3 coincide con la caída calculada para la R3 que era de $\mathrm{2.5v}$
+# Ahora si coinciden los resultados. Podemos ver que `V2` corresponde con la caída cálculada. Además, también V3 coincide con la caída cálcula para la R3 que era de $\mathrm{2.5v}$
 
 # %% [markdown]
 # ### Comprobamos con Sympy
@@ -950,7 +919,7 @@ convert_to(solucion_para_intensidad[0], [amperes]).n(2)
 
 # %% [markdown]
 # ### **Respuesta**: 
-# Supondremos el orden de las resistencias igual que el del circuito del esquema, es decir, igual que el de los cálculos que hemos hecho a mano.
+# Supondrémos el orden de las resistencias igual que el del circuito del esquema, es decir, igual que el de los cálculos que hemos hecho a mano.
 
 # %%
 print("Voltaje entre extremos de R1:")
@@ -998,7 +967,7 @@ convert_to(solucion_para_voltaje_VCC_R3[0], [volts]).n(2)
 
 # %% [markdown]
 # ### **Respuesta**: 
-# Vaya, parece que nos adelantado a este punto, la respuesta a esto está en el apartado anterior. Podemos comprobar que la suma de los voltajes en cada resistencia es igual al voltaje suministrado por la pila.
+# Vaya, parece que nos adelantado a este punto, la respuesta a esto esta en el apartado anterior. Podemos comprovar que la suma de los voltajes en cada resistencia es igual al voltaje suministrado por la pila.
 
 # %%
 print("Suma de los voltajes de cada resistencia:")
@@ -1023,7 +992,7 @@ convert_to(voltaje_resistencias, [volts]).n(2)
 # 
 #  ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_paralelo_1_lab_fisica.svg?sanitize=true)
 # 
-# Definimos el netlist del primer circuito paralelo.
+# Definimos el netlist del primer circuito paralero.
 
 # %%
 %%writefile "files\resistencias_en_paralelo_1.cir"
@@ -1047,7 +1016,7 @@ netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
-# Establecer condiciones óptimas para los análisis `.dc` y/o `.tran` si lo hay.
+# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
 # %% [markdown]
@@ -1095,7 +1064,7 @@ netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
-# Establecer condiciones óptimas para los análisis `.dc` y/o `.tran` si lo hay.
+# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
 # %% [markdown]
@@ -1107,7 +1076,7 @@ resultados = ahkab.run(netlist, lista_de_análisis)
 # %%
 print(resultados['op'])
 # %% [markdown]
-# Como podemos ver la suma de las corrientes de las pilas dummy es igual a la corriente total. Comprobémoslos.
+# Como podemos ver la suma de las corrientes de las pilas dummy es igual a la corriente total. Comprobemoslos.
 # 
 # La corriente total es:
 # %%
@@ -1123,13 +1092,13 @@ convert_to(intensidad_dummy1+intensidad_dummy2, [amperes]).n(5)
 # GENIAL !!! Se cumple la Ley de Kirchhoff
 # %% [markdown]
 # ### Comprobemos el resultado de `Ahkab` con Sympy
-# Ahora tenemos resistencias en paralelo, por lo que ya no podemos sumar sus resistencias para averiguar la resistencia total del circuito.
+# Ahora tenemos resistencias en paralelo, por lo que ya no podemos sumar sus resistencias para aberiguar la resistencia total del circuito.
 # 
 # ¿Como afecta la carga resistiva de dos resistencias en paralelo a la carga total? 
 # 
 # Antes de responder a esta pregunta calculemos la resistencia total con los datos de los que disponemos. 
 # 
-# Nótese que no existen resistencias negativas, ya que son componentes pasivos. Puesto que `Ahkab` nos está dando la corriente en negativo, le invertimos el signo para que la resistencia resulte positiva.
+# Nótese que no existen resistencias negativas, ya que son componentes pasivos. Puesto que `Ahkab` nos esta dando la corriente en negativo, le invertimos el signo para que la resistencia resulte positiva.
 # %%
 v1 = 12*volts
 r2 = 1*kilo*ohms
@@ -1142,7 +1111,7 @@ ley_ohm = Eq(v1, intensidad*resistencia)
 resistencia_total = solve(ley_ohm, resistencia)
 convert_to(resistencia_total[0], [ohms]).n(5)
 # %% [markdown]
-# Como ya sabemos, la resistencia total de cargas en serie es la suma de sus resistencias. Ahora que conocemos la resistencia total, la resistencia equivalente de las dos mallas formadas por `R3`, `R4` y `R5`, solo puede ser la resistencia total menos la resistencia de `R2`
+# Como ya sebemos, la resistencia total de cargas en serie es la suma de sus resistencias. Ahora que conocemos la resistencia total, la resistencia equivalente de las dos mallas formadas por `R3`, `R4` y `R5`, solo puede ser la resistencia total menos la resistencia de `R2`
 # %%
 r_subcircuito = resistencia_total[0] - r2
 convert_to(r_subcircuito, [ohms]).n(5)
@@ -1156,15 +1125,15 @@ ley_ohm = Eq(v, i*resistencia)
 r_subcircuito = solve(ley_ohm, resistencia)
 convert_to(r_subcircuito[0], [ohms]).n(5)
 # %% [markdown]
-# Conocemos la resistencia de cada maya, ya que una es `R5` y la otra `R3`+`R4`. Esto es $R_{m1}=\mathrm{470\ \Omega}$ y $R_{m2}=\mathrm{1720\ \Omega}$, pero la resistencia equivalente es inferior a la de cualquiera de las dos mallas. ¿Porqué? ¿Qué está pasando?
+# Conocemos la resistencia de cada maya, ya que una es `R5` y la otra `R3`+`R4`. Esto es $R_{m1}=\mathrm{470\ \Omega}$ y $R_{m2}=\mathrm{1720\ \Omega}$, pero la la resistencia equivalente es inferior a la de cualquiera de las dos mallas. ¿Porque? ¿Que está pasando?
 # 
-# Veámoslo con números más redondos. Supongamos que una pila de $\mathrm{10\ v}$ aporta una corriente de $\mathrm{1\ A}$ a un circuito con dos cargas en paralelo, de las que no conocemos sus resistencias, pero sabemos que son iguales. 
+# Veámoslo con números mas redondos. Supongamos que una pila de $\mathrm{10\ v}$ aporta una corriente de $\mathrm{1\ A}$ a un circuito con dos cargas en paralelo, de las que no conocemos sus resistencias, pero sabemos que son iguales. 
 # 
 # La resistencia equivalente sería $\frac{\mathrm{10\ v}}{\mathrm{1\ A}}=\mathrm{10\ \Omega}$
 # 
 # Para que se cumpla la Ley de Kirchhoff, por cada rama deben circular $\mathrm{0.5\ A}$, por tanto la resistencias serán de $\mathrm{20\ \Omega}$
 #
-# Vaya!!! la resistencia equivalente es justo la mitad del valor de las resistencias si estas son iguales. Esto es porque para que se cumpla la Ley de Kirchhoff, el flujo de electrones se tiene que repartir entre cada malla proporcionalmente a su resistencia, y como ya hemos visto por la ley de Ohm, esto sucede con una proporcionalidad lineal. Por lo que la inversa de la resistencia equivalente será igual a la suma de las inversas de cada malla.
+# Vaya!!! la resistencia equivalente es justo la mitad del valor de las resistencias si esta son iguales. Esto es porque para que se cumpla la Ley de Kirchhoff, el flujo de electrones se tiene que repartir entre cada malla proporcionalmente a su resistencia, y como ya hemos visto por la ley de Ohm, esto sucede con una proporcionalidad lineal. Por lo que la inversa de la resistencia equivalente sera igual a la suma de las inversas de cada malla.
 # 
 # Comprobemos esto con los datos que tenemos del circuito.
 # %%
@@ -1210,7 +1179,7 @@ convert_to(voltaje_V3[0], [volts]).n(3)
 # 
 #  ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_paralelo_2_lab_fisica.svg?sanitize=true)
 # 
-# Definimos el netlist del segundo circuito paralelo. Nos adelantamos y colocamos una pila de $\mathrm{0\ v}$ en la malla de las tres resistencias en serie.
+# Definimos el netlist del segundo circuito paralero. Nos adelantamos y colocamos una pila de $\mathrm{0\ v}$ en la malla de las tres resistencias en serie.
 
 # %%
 %%writefile "files\resistencias_en_paralelo_2.cir"
@@ -1237,7 +1206,7 @@ netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
-# Establecer condiciones óptimas para los análisis `.dc` y/o `.tran` si lo hay.
+# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
 # %% [markdown]
@@ -1286,7 +1255,7 @@ r4 = 1*kilo*ohms
 r5 = 560*ohms
 
 # %% [markdown]
-# Puesto que no sabemos cómo está afectando la pila que hay en serie con `R3`, es más sencillo calcular la tensión en el nodo 2, restando a `v1` la diferencia de potencial entre extremos de `R1`.
+# Puesto que no sabemos como esta afectando la pila que hay en serie con `R3`, es mas sencillo calcular la tensión en el nodo 2, restando a `v1` la diferencia de potencial entre extremos de `R1`.
 # 
 # #### La diferencia de potencial en V2 según `Ahkab` es:
 # %%
@@ -1296,7 +1265,7 @@ resultados['op'].results._dict['V2']*volts
 # %%
 v = symbols('v')
 ley_ohm = Eq(v, intensidad_total*r1)
-# calcular la tensión entre extremos de r1
+# calcular la tension entre extremos de r1
 voltaje_R1 = solve(ley_ohm, v)
 voltaje_V2 = v1-voltaje_R1[0]
 convert_to(voltaje_V2, [volts]).n(3)
@@ -1381,7 +1350,7 @@ convert_to(voltaje_V5[0], [volts]).n(3)
 # 
 #  ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_paralelo_3_lab_fisica.svg?sanitize=true)
 # 
-# Definimos el netlist del tercer circuito paralelo.
+# Definimos el netlist del tercer circuito paralero.
 
 # %%
 %%writefile "files\resistencias_en_paralelo_3.cir"
@@ -1405,7 +1374,7 @@ netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
-# Establecer condiciones óptimas para los análisis `.dc` y/o `.tran` si lo hay.
+# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
 for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
     analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
 # %% [markdown]
@@ -1598,7 +1567,7 @@ plt.plot(resultados['tran']['T'], resultados['tran']
 #
 # SVG es un estándar de formato de datos para gráficos vectoriales escalables, SVG por sus siglas en inglés (*Scalable Vector Graphics*). El estándar SVG permite definir gráficos mediante texto plano basado en XML (Extensible Markup Language), lo que lo hace ideal para la web. Una de sus principales ventajas es que permite definir la imagen mediante calculo vectorial, lo que se traduce en la capacidad de poder reescalar, o hacer zoom sobre la imagen sin pérdida de calidad. Esto se consigue volviendo a renderizar la imagen cuando se hace zoom o se efectúa un reescalado de esta, adaptando el renderizado a la matriz de resolución requerida en cada caso, usando la información vectorial que contiene el archivo. Es decir, cada vez que la imagen cambia de tamaño o forma, se vuelve a generar el gráfico desde cero para adaptarlo perfectamente a la resolución den nuevo espacio ocupado. Por lo que nunca encontraremos efectos de aliasing o dientes de sierra. La imagen se reproducirá tan perfecta como tu pantalla lo permita.
 #
-# Para qué **matplotlib** nos muestre los resultados como gráficos vectoriales escalables, es necesario habilitar el *inline backend* del formato *svg*. **matplotlib** es compatible con todos estos formatos:
+# Para que **matplotlib** nos muestre los resultados como gráficos vectoriales escalables, es necesario habilitar el *inline backend* del formato *svg*. **matplotlib** es compatible con todos estos formatos:
 # * **Interactivos**: GTK3Agg, GTK3Cairo, MacOSX, nbAgg, Qt4Agg, Qt4Cairo, Qt5Agg, Qt5Cairo, TkAgg, TkCairo, WebAgg, WX, WXAgg, WXCairo
 # * **Estáticos**: agg, cairo, pdf, pgf, ps, svg, template
 # Para habilitar el *inline backend* de cualquiera de estos formatos, es posible hacerlo de este modo:
@@ -1723,7 +1692,7 @@ plot.show()
 # %% [markdown]
 # Cuando hemos dibujado las gráficas más arriba, las hemos guardado cada una en un archivo de gráficos vectoriales escalables o SVG. 
 # 
-# ¡Veamos qué tal se ven!
+# ¡Veamos que tal se ven!
 # 
 # #### * Relación Corriente-Tiempo en un circuito RC serie
 # ![Gráfico vectorial escalable - Relación Corriente-Tiempo en un circuito RC serie](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/figures/fig_current_RC.svg?sanitize=true)
@@ -1839,7 +1808,7 @@ plot.tight_layout()
 plot.show()
 
 # %% [markdown]
-# Se puede observar la corriente de ambos condensadores y la de la resistencia, que es la misma que la total del circuito, aunque su bajada es diferente, se acercan a cero prácticamente a la vez.
+# Se puede observar la corriente de ambos condensadores y la de la resistencia, que es la misma que la total del circuito, aunque su bajada es diferente, se acercan a cero practicamente a la vez.
 
 # %%
 tiempo = resultados['tran']['T']
@@ -1961,7 +1930,7 @@ c2 1 2 22u
 .end
 
 # %% [markdown]
-# Ejecutamos LTspice pasando al ejecutable el archivo que acabamos de crear como parámetro.
+# Ejecutamos LTspice pasando al ejecutable el archivo que acabamos de crear como parametro.
 
 # %%
 # lts "files\carrera_de_condensadores.net"
@@ -2068,7 +2037,7 @@ plot.rcParams['figure.figsize'] = [6.4*1.9, 4.8]
 # 
 # ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_alterna_lab_fisica.svg?sanitize=true)
 # 
-# Se simula un circuito de corriente alterna usando un generador de onda sinusoidal configurado con un voltaje de pico de $\mathrm{120\ v}$, es decir, $V_{pp}=\mathrm{240\ v}$, y una frecuencia de $\mathrm{60\ Hz}$, conectado a una carga de $\mathrm{10\ k\Omega}$
+# Se simula un circuito de corriente alterna usando un generador de onda sinosoidal configurado con un voltaje de pico de $\mathrm{120\ v}$, es decir, $V_{pp}=\mathrm{240\ v}$, y una fecuencia de $\mathrm{60\ Hz}$, conectado a una carga de $\mathrm{10\ k\Omega}$
 # %%
 %%writefile "files\corriente_alterna.net"
 * Circuito en corriente alterna
@@ -2077,7 +2046,7 @@ r1 0 1 10k
 .tran 1
 .end
 # %% [markdown]
-# Ejecutamos LTspice con el netlist como parámetro para generar los archivos `.log` y `.raw`.
+# Ejetumos LTspice con el netlist como parametro para generar los archivos `.log` y `.raw`.
 # %%
 # lts "files\corriente_alterna.net"
 if platform.system() == "Darwin":
@@ -2217,7 +2186,7 @@ plot.tight_layout()
 nSvg += 1
 fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
 # %% [markdown]
-# Ahora sí, otra cosa es esto. Como podemos apreciar en la gráfica, el voltaje y la corriente evolucionan con una proporcionalidad inversa de 10000:1, justamente el número de ohmios que tiene una resistencia de $\mathrm{10\ k\Omega}$ como la de nuestro circuito. ¿Qué porqué coincide?, pues por la Ley de Ohm, para $\mathrm{10\ k\Omega}$ hacen falta $\mathrm{10\ kV}$ para tener $\mathrm{1\ A}$.
+# Ahora sí, otra cosa es esto. Como podemos apreciar en la gráfica, el voltaje y la corriente evolucionan con una proporcionalidad inversa de 10000:1, justamente el número de ohmios que tiene una resistencia de $\mathrm{10\ k\Omega}$ como la de nuestro circuito. ¿Que porqué coincide?, pues por la Ley de Ohm, para $\mathrm{10\ k\Omega}$ hacen falta $\mathrm{10\ kV}$ para tener $\mathrm{1\ A}$.
 
 
 # %% [markdown]
@@ -2307,7 +2276,7 @@ fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', 
 
 
 # %% [markdown]
-# ## CONCLUSIÓN
+# ## CONCLUSION
 # 
 # <<<< Cuando se em ocurra >>>>
 # 

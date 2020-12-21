@@ -44,6 +44,11 @@ if platform.system() == "Windows":
         'alias', 'lts "C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b ')
 
 
+
+# ########################################################
+#  # Circuito carrera de condensadores
+# ########################################################
+
 # %% [markdown]
 # ## Carrera de condensadores
 #
