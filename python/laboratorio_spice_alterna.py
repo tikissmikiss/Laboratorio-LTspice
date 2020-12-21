@@ -59,6 +59,8 @@ if platform.system() == "Windows":
 # %% [markdown]
 # ### ** Solución:** 
 # 
+# ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_alterna_lab_fisica.svg?sanitize=true)
+# 
 # Se simula un circuito de corriente alterna usando un generador de onda sinosoidal configurado con un voltaje de pico de $\mathrm{120\ v}$, es decir, $V_{pp}=\mathrm{240\ v}$, y una fecuencia de $\mathrm{60\ Hz}$, conectado a una carga de $\mathrm{10\ k\Omega}$
 # %%
 %%writefile "files\corriente_alterna.net"
