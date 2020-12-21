@@ -20,8 +20,6 @@ fig_directory = "..\\resource\\figures\\"
 import matplotlib.pyplot as plot
 from IPython.display import set_matplotlib_formats
 set_matplotlib_formats('svg')
-from IPython.display import set_matplotlib_formats
-set_matplotlib_formats('svg')
 
 # Primero preparamos un lugar para ubicar todo los archivos que genere el Notebook
 # %%
@@ -109,32 +107,17 @@ i_C2 = list(map(f, i_C2))
 i_R1 = resultados['tran']['I(V0)']
 i_R1 = list(map(f, i_R1))
 
-plot.rcParams['figure.figsize'] = [6.4*1.1, 4.8*1.2]
+plot.rcParams['figure.figsize'] = [6.4*1.5, 4.8*1]
 plot.rcParams['font.size'] = 12
-
 fig, ax = plot.subplots()
 plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc1 = plot.subplot(211)
-line_iC1, = axc1.plot(tiempo, i_C1)
+ax.set(xlabel='Tiempo (s)', ylabel='Corriente (A)')
+line_iC1, = ax.plot(tiempo, i_C1)
+line_iC2, = ax.plot(tiempo, i_C2)
+line_iR1, = ax.plot(tiempo, i_R1)
 line_iC1.set_label('Corriente C1')
-# line_iC1.set_c('tab:brown')
-axc1.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc2 = plot.subplot(211)
-line_iC2, = axc2.plot(tiempo, i_C2)
 line_iC2.set_label('Corriente C2')
-# line_iC2.set_c('tab:purple')
-axc2.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc3 = plot.subplot(211)
-line_iR1, = axc3.plot(tiempo, i_R1)
 line_iR1.set_label('Corriente R1')
-# line_iR1.set_c('tab:red')
-axc3.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
 plot.legend()
 plot.grid(True)
 plot.tight_layout()
@@ -152,41 +135,28 @@ f = lambda a, b: a - b
 v_C1 = list(map(f, v_C1, v_R1))
 v_C2 = list(map(f, v_C2, v_R1))
 
-plot.rcParams['figure.figsize'] = [6.4*1.2, 4.8*1.3]
-plot.rcParams['font.size'] = 12
 fig, ax = plot.subplots()
 plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv1 = plot.subplot(211)
-line_vC1, = axv1.plot(tiempo, v_C1)
+ax.set(xlabel='Tiempo (s)', ylabel='Voltios (V)')
+ax.grid(True)
+
+line_vC1, = ax.plot(tiempo, v_C1)
+line_vR1, = ax.plot(tiempo, v_R1)
+line_vC2, = ax.plot(tiempo, v_C2)
+line_vR1, = ax.plot(tiempo, v_R1)
 line_vC1.set_label('Voltios C1')
 line_vC1.set_c('tab:blue')
-axv1.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv1.grid(True)
-axv3 = plot.subplot(211)
-line_vR1, = axv3.plot(tiempo, v_R1)
 line_vR1.set_label('Voltios R1')
 line_vR1.set_c('tab:red')
-axv3.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-plot.legend()
-axv2 = plot.subplot(212)
-line_vC2, = axv2.plot(tiempo, v_C2)
 line_vC2.set_label('Voltios C2')
 line_vC2.set_c('tab:green')
-axv2.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv3 = plot.subplot(212)
-line_vR1, = axv3.plot(tiempo, v_R1)
 line_vR1.set_label('Voltios R1')
 line_vR1.set_c('tab:red')
-axv3.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
+
 plot.legend()
-plot.grid(True)
 plot.tight_layout()
-plt.savefig("test.svg", format="svg")
-plot.rcParams['figure.figsize'] = [6.4, 4.8]
+# plt.savefig("test.svg", format="svg")
+# plot.rcParams['figure.figsize'] = [6.4, 4.8]
 # {'tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan'}
 
 # %% [markdown]
@@ -222,101 +192,6 @@ plot.legend(
     ("Corriente C1", "Corriente C2", "Corriente R1", "Voltios C1", "Voltios C2", "Voltios R1"))
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.show()
-
-# %%
-
-
-
-
-
-
-
-
-
-plot.rcParams['figure.figsize'] = [6.4*1.2, 4.8*1.3]
-plot.rcParams['font.size'] = 12
-fig, ax = plot.subplots()
-plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv1 = plot.subplot()
-line_vC1, = axv1.plot(tiempo, v_C1)
-line_vC1.set_label('Voltios C1')
-line_vC1.set_c('tab:blue')
-axv1.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv1.grid(True)
-axv3 = plot.subplot()
-line_vR1, = axv3.plot(tiempo, v_R1)
-line_vR1.set_label('Voltios R1')
-line_vR1.set_c('tab:red')
-axv3.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-plot.legend()
-axv2 = plot.subplot()
-line_vC2, = axv2.plot(tiempo, v_C2)
-line_vC2.set_label('Voltios C2')
-line_vC2.set_c('tab:green')
-axv2.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv3 = plot.subplot()
-line_vR1, = axv3.plot(tiempo, v_R1)
-line_vR1.set_label('Voltios R1')
-line_vR1.set_c('tab:red')
-axv3.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-
-# plot.rcParams['legend.fontsize'] = 'large'
-# plot.rcParams['figure.titlesize'] = 'medium'
-fig, ax = plot.subplots()
-plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc1 = plot.subplot()
-line_iC1, = axc1.plot(tiempo, i_C1)
-line_iC1.set_label('Corriente C1')
-# line_iC1.set_c('tab:brown')
-axc1.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc2 = plot.subplot()
-line_iC2, = axc2.plot(tiempo, i_C2)
-line_iC2.set_label('Corriente C2')
-# line_iC2.set_c('tab:purple')
-axc2.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc3 = plot.subplot()
-line_iR1, = axc3.plot(tiempo, i_R1)
-line_iR1.set_label('Corriente R1')
-# line_iR1.set_c('tab:red')
-axc3.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-plot.legend()
-plot.grid(True)
-plot.tight_layout()
-plot.show()
-
-
-
-# %%
-plot.legend()
-plot.grid(True)
-plot.tight_layout()
-plt.savefig("test.svg", format="svg")
-plot.rcParams['figure.figsize'] = [6.4, 4.8]
-# {'tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan'}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # %% [markdown]
 # ### **Ejercicio premium:** 
@@ -409,90 +284,52 @@ v_Cs = list(map(f, v_Cs, v_R1))
 # %% [markdown]
 # Dibujamos las gráficas con los datos obtenidos con LTspice.
 # %%
-plot.rcParams['figure.figsize'] = [6.4*1.1, 4.8*1.2]
+# plot.rcParams['figure.figsize'] = [6.4*1.1, 4.8*1.2]
 plot.rcParams['font.size'] = 12
-# plot.rcParams['legend.fontsize'] = 'large'
-# plot.rcParams['figure.titlesize'] = 'medium'
+
 fig, ax = plot.subplots()
 plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc1 = plot.subplot(211)
-line_iC1, = axc1.plot(tiempo, i_C1)
+ax.set(xlabel='Tiempo (s)', ylabel='Corriente (A)')
+
+line_iC1, = ax.plot(tiempo, i_C1)
 line_iC1.set_label('Corriente C1')
-axc1.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc2 = plot.subplot(211)
-line_iC2, = axc2.plot(tiempo, i_C2)
+
+line_iC2, = ax.plot(tiempo, i_C2)
 line_iC2.set_label('Corriente C2')
-axc2.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axc3 = plot.subplot(211)
-line_iR1, = axc3.plot(tiempo, i_R1)
+
+line_iR1, = ax.plot(tiempo, i_R1)
 line_iR1.set_label('Corriente R1')
-axc3.set(xlabel='Tiempo (s)', 
-    ylabel='Corriente (A)', 
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
+
 plot.legend()
 plot.grid(True)
 plot.tight_layout()
 plot.show()
 
 # %%
-plot.rcParams['figure.figsize'] = [6.4*1.2, 4.8*1.3]
+# plot.rcParams['figure.figsize'] = [6.4*1.2, 4.8*1.3]
 plot.rcParams['font.size'] = 12
-# plot.rcParams['legend.fontsize'] = 'large'
-# plot.rcParams['figure.titlesize'] = 'medium'
+
 fig, ax = plot.subplots()
 plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-plot.legend()
-axv2 = plot.subplot(211)
-line_vC2, = axv2.plot(tiempo, v_Cs)
+ax.set(xlabel='Tiempo (s)', ylabel='Voltios (V)')
+
+line_vC2, = ax.plot(tiempo, v_Cs)
 line_vC2.set_label('Voltios C1 y C2')
 line_vC2.set_c('tab:green')
-axv2.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv3 = plot.subplot(211)
-line_vR1, = axv3.plot(tiempo, v_R1)
+
+line_vR1, = ax.plot(tiempo, v_R1)
 line_vR1.set_label('Voltios R1')
 line_vR1.set_c('tab:red')
-axv3.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv1 = plot.subplot(211)
-line_vC1, = axv1.plot(tiempo, vcc)
+
+line_vC1, = ax.plot(tiempo, vcc)
 line_vC1.set_label('Voltios VCC')
 line_vC1.set_c('tab:blue')
-axv1.set(xlabel='Tiempo (s)', ylabel='Voltios (V)',
-    title='Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
-axv1.grid(True)
+
+ax.grid(True)
 plot.legend()
-plot.grid(True)
 plot.tight_layout()
-plt.savefig("test.svg", format="svg")
+# plt.savefig("test.svg", format="svg")
 plot.rcParams['figure.figsize'] = [6.4, 4.8]
 # {'tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan'}
 
-# %%
-
-
-
-
-
-
-
-
-
-
-
-
-
-# %% [markdown]
-# Esto habrá generado dos archivos, un `.log` y un .raw, con el resultado de la 
-# %%
-lts "files\carrera_de_condensadores.net"
-
-# %%
-get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\circuito_sencillo.net')
-
-# get_ipython().system('%windir%\\system32\\notepad.exe')
 # %%

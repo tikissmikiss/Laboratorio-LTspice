@@ -1,9 +1,8 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
 # %%
 from shutil import rmtree
 from os.path import isdir
 from os import mkdir
+from IPython.core.display import set_matplotlib_formats
 from sympy import solve, symbols, Eq
 from sympy.physics.units import kilo, milli
 from sympy.physics.units import convert_to
@@ -15,8 +14,29 @@ import pylab as plt
 from IPython import get_ipython
 
 files_directory = "files\\"
-fig_directory = "figuras\\"
+fig_directory = "..\\resource\\figures\\"
 import matplotlib.pyplot as plot
+from IPython.display import set_matplotlib_formats
+set_matplotlib_formats('svg')
+from IPython.display import set_matplotlib_formats
+set_matplotlib_formats('svg')
+
+
+# %%
+# Primero preparamos un lugar para ubicar todo los archivos que genere el Notebook
+files_directory = "files\\"
+# si el directorio existe se elimina con su contenido
+if isdir(files_directory):
+    rmtree(files_directory)
+# crea un directorio para alojar todo los archivos que se generen
+mkdir(files_directory)
+
+fig_directory = "..\\resource\\figures\\"
+# si el directorio existe se elimina con su contenido
+if isdir(fig_directory):
+    rmtree(fig_directory)
+# crea un directorio para alojar todo los archivos que se generen
+mkdir(fig_directory)
 
 
 
@@ -60,12 +80,9 @@ c1 2 0 1m ic=0
 # Que se opongan a los cambios de voltaje no significa que lo impidan, lo que sucede es que cuando se da un cambio abrupto de potencial, un condensador aumenta el tiempo que transcurre desde el estado de potencial inicial hasta que se alcanza el nuevo estado de potencial. Esto sucede tanto cuando el cambio de potencial se incrementa o se disminuye. Y el tiempo necesario depende de la capacidad del condensador que en el S.I. se expresa en *faradios* y su símbolo es $\mathrm{F}$.
 # 
 # Lo comentado implica que el estado del circuito va a cambiar a lo largo del tiempo cuando se dé un cambio de potencial y el análisis del tipo `.tran` nos va a permitir simular justamente eso. Lo configuraremos de modo que se reproduzca un cambio de potencial y capturaremos la evolución del circuito en el tiempo.
-#
-# Leamos el circuito:
-# %%
-circuito_y_análisis = ahkab.netlist_parser.parse_circuit("files\condensador_en_continua.ckt")
+
 # %% [markdown]
-# Procesamos el circuito con `Ahkab` y extraemos los datos.
+# ### Procesamos el circuito con `Ahkab` y extraemos los datos.
 # %%
 # Procesar circuito
 circuito_y_análisis = ahkab.netlist_parser.parse_circuit("files\condensador_en_continua.ckt")
@@ -74,18 +91,15 @@ netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 # Extraer datos de simulaciones
 lista_de_análisis = ahkab.netlist_parser.parse_analysis(netlist, análisis_en_netlist)
-# Establecer condiciones óptimas para los ánalisis `.dc` y/o `.tran` si lo hay.
-for analisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
-    analisis['outfile'] = files_directory + "simulación_" + analisis['type'] + ".tsv"
+# Establecer condiciones óptimas para los análisis `.dc` y/o `.tran` si lo hay.
+for análisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.values() or "tran" in d.values()]:
+    análisis['outfile'] = files_directory + "simulación_" + análisis['type'] + ".tsv"
 # %% [markdown]
 #  Ejecutamos la simulación
 # %%
 resultados = ahkab.run(netlist, lista_de_análisis)
-
-
 # %% [markdown]
 # Imprimir los resultados de los análisis.
-
 # %%
 print(resultados['op'])
 
@@ -106,14 +120,34 @@ plt.plot(resultados['tran']['T'], resultados['tran']
 # %% [markdown]
 # #### **Respuesta** 
 # 
+# #### Dibuja las gráficas en un formato estándar de representación vectorial (SVG, por ejemplo). Algo de ayuda [aquí](https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html#IPython.display.set_matplotlib_formats).
+# 
+# ¿Que es SVG?
+#
+# SVG es un estándar de formato de datos para gráficos vectoriales escalables, SVG por sus siglas en inglés (*Scalable Vector Graphics*). El estándar SVG permite definir gráficos mediante texto plano basado en XML (Extensible Markup Language), lo que lo hace ideal para la web. Una de sus principales ventajas es que permite definir la imagen mediante calculo vectorial, lo que se traduce en la capacidad de poder reescalar, o hacer zoom sobre la imagen sin pérdida de calidad. Esto se consigue volviendo a renderizar la imagen cuando se hace zoom o se efectúa un reescalado de esta, adaptando el renderizado a la matriz de resolución requerida en cada caso, usando la información vectorial que contiene el archivo. Es decir, cada vez que la imagen cambia de tamaño o forma, se vuelve a generar el gráfico desde cero para adaptarlo perfectamente a la resolución den nuevo espacio ocupado. Por lo que nunca encontraremos efectos de aliasing o dientes de sierra. La imagen se reproducirá tan perfecta como tu pantalla lo permita.
+#
+# Para que **matplotlib** nos muestre los resultados como gráficos vectoriales escalables, es necesario habilitar el *inline backend* del formato *svg*. **matplotlib** es compatible con todos estos formatos:
+# * **Interactivos**: GTK3Agg, GTK3Cairo, MacOSX, nbAgg, Qt4Agg, Qt4Cairo, Qt5Agg, Qt5Cairo, TkAgg, TkCairo, WebAgg, WX, WXAgg, WXCairo
+# * **Estáticos**: agg, cairo, pdf, pgf, ps, svg, template
+# Para habilitar el *inline backend* de cualquiera de estos formatos, es posible hacerlo de este modo:
+# 
+# ````python
+# from IPython.display import set_matplotlib_formats
+# set_matplotlib_formats('svg', …) 
+# ````
+# Nosotros solo habilitaremos el *inline backend* para SVG.
+
+# %%
+from IPython.display import set_matplotlib_formats
+set_matplotlib_formats('svg')
+
+# %% [markdown]
+# Cuando dibujemos las próximas graficas **matplotlib** las mostrará usando el backend de svg. Guardaremos alguno de estos resultados en un archivo con extensión .svg con el fondo transparente y los mostraremos al final, así se verán genial tanto en temas de color claros como oscuros.
+#
 # #### Etiqueta los ejes convenientemente y comenta la gráfica:
 # 
-# Ademas de etiquetar los ejes, para una mayor claridad, también vamos a remapear los datos a valores absolutos.
+# Además de etiquetar los ejes, para una mayor claridad, también vamos a remapear los datos a valores absolutos.
 # %%
-plot.rcParams['figure.figsize'] = [10.0, 4.8]
-plot.rcParams['font.size'] = 12
-# plot.rcParams['legend.fontsize'] = 'large'
-# plot.rcParams['figure.titlesize'] = 'medium'
 fig, ax = plot.subplots()
 ax.set(xlabel='Tiempo (s)', 
     ylabel='Intensidad (A)', 
@@ -123,7 +157,6 @@ y = resultados['tran']['I(V1)']
 f = lambda x: -x if x < 0 else x
 y = list(map(f, y))
 
-
 ax.grid()
 line, = ax.plot(x, y)
 line.set_label('Corriente (A)')
@@ -131,12 +164,12 @@ plot.legend()
 plot.tight_layout()
 plot.show()
 # Guardar figura en un archivo vectorial
-fig.savefig('figuras\\fig_current_RC.svg', transparent='true', format='svg')
+fig.savefig(fig_directory + 'fig_current_RC.svg', transparent='true', format='svg')
 
 # %% [markdown]
 # Se aprecia en la gráfica como la corriente inicial es de $\mathrm{6\ mA}$ aproximadamente y disminuye dibujando una curva que se aproxima asintóticamente a cero. 
 # 
-# Como ya hemos comentado anteriormente, los condensadores se oponen a los cambios bruscos de voltaje. Puesto que se han configurado las condiciones iniciales del condensador como sin carga, el inicio de la simulación es equivalente a encender la pila, estando previamente apagada y el condensador sin carga. Por lo que se da un cambio instantaneo de potencial en el circuito pasando de $\mathrm{0\ v}$ a $\mathrm{6\ v}$.
+# Como ya hemos comentado anteriormente, los condensadores se oponen a los cambios bruscos de voltaje. Puesto que se han configurado las condiciones iniciales del condensador como sin carga, el inicio de la simulación es equivalente a encender la pila, estando previamente apagada y el condensador sin carga. Por lo que se da un cambio instantáneo de potencial en el circuito pasando de $\mathrm{0\ v}$ a $\mathrm{6\ v}$.
 # 
 # Conforme se va cargando el condensador aumenta la impedancia (*resistencia*) de este, que al estar en serie con una resistencia (habitualmente llamada limitadora de corriente), la resistencia total aumenta con el tiempo, y la Ley de Ohm dice que si aumenta la resistencia la corriente disminuye, y esto es exactamente lo que vemos en la gráfica.
 # 
@@ -155,7 +188,7 @@ ax.plot(x, y)
 plot.tight_layout()
 plot.show()
 # Guardar figura en un archivo vectorial
-fig.savefig('figuras\\fig_volt_RC.svg', transparent='true', format='svg')
+fig.savefig(fig_directory + 'fig_volt_RC.svg', transparent='true', format='svg')
 
 # %% [markdown]
 # Las gráficas no son *opuestas*, y no deben serlo, puesto que `V1` es la salida de la pila, que en condiciones ideales es capaz de suministrar la corriente demandada y el voltaje se mantiene constante. 
@@ -182,7 +215,7 @@ ax1.set(xlabel='Tiempo (s)',
 plot.legend()
 plot.grid()
 plot.tight_layout()
-fig.savefig('figuras\\fig_volts_c1_RC.svg', transparent='true', format='svg')
+fig.savefig(fig_directory + 'fig_volts_c1_RC.svg', transparent='true', format='svg')
 
 ax2 = plot.subplot(111)
 line_R1, = ax2.plot(tiempo, v_R1)
@@ -192,17 +225,17 @@ plot.legend()
 plot.tight_layout()
 ax1.grid()
 ax2.grid()
-fig.savefig('figuras\\fig_volts_r1_&_c1_RC.svg', transparent='true', format='svg')
-plot.show()
 # Guardar figura en un archivo vectorial
+fig.savefig(fig_directory + 'fig_volts_r1_&_c1_RC.svg', transparent='true', format='svg')
+plot.show()
 
 # %% [markdown]
 # 
 # Aunque las gráficas del voltaje en los extremos de la resistencia y del condensador también son *opuestas*, no es esto lo que pregunta el enunciado. La comparación la debemos realizar entre la curva del voltaje del condensador y la curva de la corriente.
 # 
-# ![](figuras\fig_current_RC.svg?sanitize=true)
+# ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/figures/fig_current_RC.svg?sanitize=true)
 # 
-# ![](figuras\fig_volts_c1_RC.svg?sanitize=true)
+# ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/figures/fig_volts_c1_RC.svg?sanitize=true)
 # 
 # El motivo por el que son opuestas, es porque de lo contrario no se cumpliría la Ley de Ohm ($\mathrm{V = R \cdot I}$). Si $\mathrm{R}$ es constante, y cambia $\mathrm{I}$, a la fuerza, tiene que cambiar $\mathrm{V}$. Pero la clave para comprenderlo está más bien en la resistencia *"limitadora de corriente"*, la cual, podemos estar seguros, tiene una resistencia constante.
 #
@@ -216,20 +249,30 @@ plot.show()
 # $$\mathrm{V=R\cdot I\ \rightarrow}\ I=\frac{\mathrm{V}}{\mathrm{R}}\mathrm{\ \rightarrow}\ I=\frac{\mathrm{V} }{\mathrm{0}}=\infty  $$
 # ¿Es esto posible? Pues sí, así es, la corriente se iría a infinito. Esto es lo que en electrónica llamamos un *cortocircuito*. Por suerte, esto solo dura un instante, y aunque la fuente fuera capaz de suministrar tal cantidad de corriente (que no lo es), en cuanto el condensador empieza a cargarse, su impedancia aumenta rápidamente, y por suerte no agota todos los recursos energéticos que nos quedan.
 # Este es el motivo por el que, en electrónica, a la resistencia que a menudo acompaña en serie al condensador, la llamamos *"limitadora de corriente"*, ya que garantiza que siempre haya una mínima resistencia y evite que el flujo de corriente sea infinito, y nos quedemos sin energía. Aunque hay alguna que otra posibilidad de que algo explote o se queme y nos libre de agotar la energía.
+
 # %% [markdown]
-# #### Dibuja las gráficas en un formato estándar de representación vectorial (SVG, por ejemplo). Algo de ayuda [aquí](https://ipython.readthedocs.io/en/stable/api/generated/IPython.display.html#IPython.display.set_matplotlib_formats).
+# Cuando hemos dibujado las gráficas más arriba, las hemos guardado cada una en un archivo de gráficos vectoriales escalables o SVG. 
 # 
-# Cuando hemos dibujado las gráficas mas arriba, las hemos guardado cada una en un archivo de gráficos vectoriales escalables o SVG de sus siglas en ingles (Scalable Vector Graphics). Y estos son los archivos:
+# ¡Veamos que tal se ven!
 # 
-# #### * Gráfico vectorial escalable - Relación Corriente-Tiempo en un circuito RC serie
-#  ![Gráfico vectorial escalable - Relación Corriente-Tiempo en un circuito RC serie](figuras\fig_current_RC.svg?sanitize=true)
+# #### * Relación Corriente-Tiempo en un circuito RC serie
+# ![Gráfico vectorial escalable - Relación Corriente-Tiempo en un circuito RC serie](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/figures/fig_current_RC.svg?sanitize=true)
 # 
-# #### * Gráfico vectorial escalable - Relación Voltios-Tiempo para la resistencia y el condensador de un circuito RC serie
-#  ![Gráfico vectorial escalable - Relación Voltios-Tiempo para la resistencia y el condensador de un circuito RC serie](figuras\fig_volts_r1_&_c1_RC.svg?sanitize=true)
+# #### * Relación Voltios-Tiempo para la resistencia y el condensador de un circuito RC serie
+# ![Gráfico vectorial escalable - Relación Voltios-Tiempo para la resistencia y el condensador de un circuito RC serie](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/figures/fig_volts_r1_&_c1_RC.svg?sanitize=true)
+
+# 
+# #### * Relación Voltios-Tiempo en V1
+# ![Gráfico vectorial escalable - Relación Voltios-Tiempo para la resistencia y el condensador de un circuito RC serie](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/figures/fig_volt_RC.svg?sanitize=true)
+
+# 
+# #### * Relación Voltios-Tiempo en el condensador de un circuito RC serie
+# ![Gráfico vectorial escalable - Relación Voltios-Tiempo para la resistencia y el condensador de un circuito RC serie](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/figures/fig_volts_c1_RC.svg?sanitize=true)
+
 # %% [markdown]
 # #### ¿Qué valores devuelve el análisis de tipo `.op`?
 # 
-# El analisis `.op` devuelve lo siguiente:
+# El análisis `.op` devuelve lo siguiente:
 # %%
 print(resultados['op'])
 
