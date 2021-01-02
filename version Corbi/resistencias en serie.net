@@ -1,0 +1,8 @@
+* circuito con tres resistencias en serie
+v1 1 0 type=vdc vdc=9
+R1 0 2 3k
+R2 2 3 10k  
+R3 3 1 5k
+* análisis del circuito
+.op
+.end
