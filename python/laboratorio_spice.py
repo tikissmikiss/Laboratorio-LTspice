@@ -5,7 +5,7 @@ from IPython import get_ipython
 
 # %% [markdown]
 #  # **LABORATORIO SIMULACIÓN SPICE** 
-#   ###  *(Powered by José Herce. Inspired by the work of Dr. Alberto Corbi)*
+#   ###  *Powered by José Herce. Inspired by the work of Dr. Alberto Corbi.* 04/01/2021
 # 
 #   ## Objetivo del laboratorio
 #   El objetivo de la presenta práctica es conocer el estándar de simulación de circuitos [SPICE](http://bwrcs.eecs.berkeley.edu/Classes/IcBook/SPICE) y realizar pequeñas simulaciones en corriente continua con el mismo. SPICE es una forma elegante y sencilla de codificar circuitos eléctricos de manera que puedan ser procesados por un ordenador. Mediante un sencillo lenguaje podemos definir resistencias, fuentes de alimentación, etc., las conexiones entre ellos y los resultados que deseamos obtener.
@@ -390,6 +390,7 @@ get_ipython().system('conda install -y -c conda-forge matplotlib')
 #   $$V=\frac{J}{C}$$
 #   
 #   * Demostración:
+#   
 #   $$V=\Omega\cdot A\ \rightarrow \text{como}\ A=\frac{C}{s}$$
 #   
 #  
@@ -400,12 +401,6 @@ get_ipython().system('conda install -y -c conda-forge matplotlib')
 #   
 #   
 #   $$F=F$$
-#   
-# 
-# 
-# 
-# 
-# 
 # %% [markdown]
 #   Comencemos con el circuito más sencillo posible de todos:
 # 
@@ -492,8 +487,6 @@ circuito_y_análisis = ahkab.netlist_parser.parse_circuit(files_directory + 'cir
 netlist = circuito_y_análisis[0]
 análisis_en_netlist = circuito_y_análisis[1]
 
-# Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de análisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de análisis a realizar (dc, tran, etc.) y los parámetros con los que se realizará cada análisis.
-
 # %% [markdown]
 # Ahora con el método `ahkab.netlist_parser.parse_analysis()` generamos una lista con las operaciones de análisis que se realizaran durante la simulación. Cada elemento de la lista contendrá el tipo de análisis a realizar (dc, tran, etc.) y los parámetros con los que se realizará cada análisis.
 
@@ -517,9 +510,9 @@ lista_de_análisis[1]['outfile'] = "simulación_dc.tsv"
 
 # %% [markdown]
 #   > **Pregunta:** escribe el código Python necesario para identificar qué análisis de `lista_de_análisis` son de tipo `dc` ó `tran` y sólo añadir la propiedad `outfile` en estos casos.
-# 
+# >
 #  > Aquí tenéis un post de Stackoverflow con algo de [ayuda](https://stackoverflow.com/questions/49194107/how-to-find-index-of-a-dictionary-key-value-within-a-list-python).
-# 
+# >
 #  > Un poco más de ayuda: el siguiente código (sí, una única línea) devuelve el índice de la simulación que es de tipo `dc`. Para simplificar un poco el ejercicio, suponed que, como máximo, habrá un análisis de tipo `tran` y/o `dc`.
 
 # %%
@@ -528,23 +521,25 @@ lista_de_análisis[1]['outfile'] = "simulación_dc.tsv"
 # %% [markdown]
 #  > **Respuesta:**
 # 
-#  > Del análisis de la sentencia anterior que tiene la forma
+#  Del análisis de la sentencia anterior que tiene la forma
 #   ```python
 #  [...][0]
 #   ```
-#  Se deduce que se está haciendo referencia a la primera posición de una estructura indexabe (`foo[0]`), como un vector, una lista, etc. Por tanto, el primer corchete debe de estar refiriéndose a una lista o un vector.
+#  Se deduce que se está haciendo referencia a la primera posición de una estructura indexabe (`foo[0]`), como un vector, una lista, etc. Por tanto, el primer corchete, el de los puntos suspensivos, debe de estar refiriéndose a una lista o un vector.
 #   ```python
 #  vector = [i for i, d in enumerate(lista_de_análisis) if "dc" in d.values()]
 #   ```
-#  Más arriba, al conociéndose de antemano que el análisis que estamos tratando va a devolver en la posición "`1`" un análisis tipo "`dc`", se ha hardcodeado la asignación de este modo:
+#  Más arriba, conociéndose de antemano que el análisis que estamos tratando, va a devolver un análisis tipo "`dc`" en la posición "`1`", se ha hardcodeado la asignación de este modo:
 #   ```python
 #  lista_de_análisis[1]['outfile'] = "simulación_dc.tsv"
 #   ```
 #  Como estamos suponiendo que, como máximo, habrá un análisis de tipo `tran` y/o `dc`, podemos hacer la asignación combinando las dos sentencias.
-#   ```python
+#  
+# ``` python 
 #  indice = [i for i, d in enumerate(lista_de_análisis) if "dc" in d.values()][0]
-#  lista_de_análisis[ indice ]['outfile'] = "simulación_dc.tsv"
-#   ```
+#  lista_de_análisis[ indice ]['outfile'] = "simulación_dc.tsv" 
+# ```
+#   
 #  Incluso en una única línea:
 #   ```python
 #  lista_de_análisis[ [i for i, d in enumerate(lista_de_análisis) if "dc" in d.values()][0] ]['outfile'] = "simulación_dc.tsv"
@@ -605,8 +600,8 @@ for i in range(10):
 print("\n\t**** FUNCIONA !!! ****")
 
 # %% [markdown]
-#  > Podríamos haber usado `d` en vez de `i` para recuperar todos los diccionarios con `dc` o `tran` y añadir el archivo a todos los análisis, de este modo:
-#  ```
+# Podríamos haber usado `d` en vez de `i` para recuperar todos los diccionarios con `dc` o `tran` y añadir el archivo a todos los análisis, de este modo:
+#  ```python
 #  for analisis in [`d` for i, d in enumerate(lista) if "dc" in d.values()]:
 #      analisis['outfile'] = "simulación dc indice " + str(analisis['indice']) + ".tsv"
 #  ```
@@ -663,22 +658,29 @@ print(resultados['dc'].keys())
 plot.rcParams['figure.figsize'] = [6.4, 3.8]
 plot.rcParams['font.size'] = 12
 
-figura = plt.figure()
+fig = plt.figure()
 
 plt.title("Prueba DC")
 plt.plot(resultados['dc']['V1'], resultados['dc']['I(V1)'], label="Voltaje (V1)")
+
+nSvg = 1
+name = "Prueba_DC_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #  > **Pregunta:** comenta la gráfica anterior… ¿qué estamos viendo exactamente? Etiqueta los ejes de la misma convenientemente. Así como ningún número puede *viajar* solo sin hacer referencia a su naturaleza, ninguna gráfica puede estar sin sus ejes convenientemente etiquetados. Algo de [ayuda](https://matplotlib.org/3.1.0/gallery/pyplots/fig_axes_labels_simple.html). ¿Qué biblioteca estamos usando para graficar? Una [pista](https://matplotlib.org).
 # %% [markdown]
 #  > **Respuesta:**
-# 
+# >
 #  > La gráfica está mostrando diferencia de potencia (V) en el eje x, y corriente o intensidad (A) en el eje y.
-# 
+# >
 #  > Si tomamos los valores como absolutos, puesto que el signo solo representa el sentido del flujo de los electrones, se ve como conforme aumenta la diferencia de potencial aumenta linealmente la corriente, y esto, según la Ley de Ohm debería de pasar a razón de la carga o resistencia. Puesto que la carga de nuestro circuito ofrece una resistencia de $\mathrm{100\Omega}$, para, por ejemplo $\mathrm{4v}$, según la ley de Ohm tendríamos:
-#  $$\mathrm{V}=\mathrm{R}\cdot\mathrm{I}$$
-#  $$\mathrm{I}=\frac{\mathrm{V}}{\mathrm{R}}=\frac{\mathrm{4v}}{\mathrm{100\Omega}}=\mathrm{0.04A}$$
-# 
+#  >
+# > $$\mathrm{V}=\mathrm{R}\cdot\mathrm{I}$$
+#  >
+# > $$\mathrm{I}=\frac{\mathrm{V}}{\mathrm{R}}=\frac{\mathrm{4v}}{\mathrm{100\Omega}}=\mathrm{0.04A}$$
+# >
 #  > Aquí la gráfica con sus ejes convenientemente etiquetados:
 
 # %%
@@ -688,9 +690,14 @@ plot.rcParams['font.size'] = 12
 fig, ax = plot.subplots()
 ax.plot(resultados['dc']['Vn001'], resultados['dc']['I(V1)'])
 ax.set(xlabel='Voltaje (V)', ylabel='Intensidad (A)',
-       title='Circuito VDC ($\mathrm{10v}$) - Resistencia $\mathrm{100\ \Omega}$')
+       title='Circuito VDC ($\mathrm{10v}$) - Resistencia $\mathrm{100\ \Omega}$ - (Ahkab)')
 ax.grid()
 plot.show()
+
+nSvg = 1
+name = "Circuito_VDC_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #   ### Resultados de la simulación `.op`
@@ -703,11 +710,13 @@ print(resultados['op'].results)
 #   > **Pregunta:** justifica el sencillo resultado anterior (análisis `op`). Repite el cálculo con Sympy, atendiendo con mimo a las unidades y al formateo de los resultados (tal y como hemos visto en muchos otros notebooks en clase).
 # %% [markdown]
 #  > **Respuesta:**
-# 
+# >
 #  > Puesto que la carga de nuestro circuito ofrece una resistencia de $\mathrm{100\Omega}$, para $\mathrm{9v},$ según la ley de Ohm tendríamos:
-#  $$\mathrm{V}=\mathrm{R}\cdot\mathrm{I}$$
-#  $$\mathrm{I}=\frac{\mathrm{V}}{\mathrm{R}}=\frac{\mathrm{9v}}{100\mathrm{\Omega}}=\mathrm{0.09A}$$
-# 
+#  >
+# > $$\mathrm{V}=\mathrm{R}\cdot\mathrm{I}$$
+#  >
+# > $$\mathrm{I}=\frac{\mathrm{V}}{\mathrm{R}}=\frac{\mathrm{9v}}{100\mathrm{\Omega}}=\mathrm{0.09A}$$
+# >
 #  > Con Sympy:
 
 # %%
@@ -736,8 +745,8 @@ if platform.system() == "Windows":
 # %% [markdown]
 #  > **Respuesta:**
 # 
-#  > * `-b` establece la ejecución por lotes. Los datos resultantes se guardarán en un `archivo.raw`
-#  > * `-ascii` indica que los `archivos.raw` deben de generarse en formato ASCII
+#  * `-b` establece la ejecución por lotes. Los datos resultantes se guardarán en un `archivo.raw`
+#  * `-ascii` indica que los `archivos.raw` deben de generarse en formato ASCII
 # %% [markdown]
 #  También tenemos que cambiar ligeramente la sintaxis. Ejecuta esta línea para que se escriba el fichero siguiente. Para LTspice, vamos a reservar la extensión `.net`:
 
@@ -751,6 +760,12 @@ get_ipython().run_cell_magic('writefile', "'files\\circuito_sencillo.net'", '* E
 
 # %%
 lts "files\circuito_sencillo.net"
+# %%
+# # Al convertir a Python, VSCode introduce un cambio de línea entre cada celda y las celdas que usan el alias "lts" dan error de sintaxis al ejecutar. Usé esto para solucionarlo hasta que descubrí el porqué. Lo mantengo para consultas futuras. José Herce.
+# if platform.system() == "Darwin":
+#     get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/carrera_de_condensadores.net')
+# if platform.system() == "Windows":
+#     get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\carrera_de_condensadores.net')
 
 # %% [markdown]
 #  Esto habrá generado dos archivos, un `.log` y un .raw, con el resultado de la simulación. Veamos su contenido.
@@ -758,13 +773,13 @@ lts "files\circuito_sencillo.net"
 #  ## Contenido del `.log`:
 
 # %%
-get_ipython().run_line_magic('pycat', 'files\circuito_sencillo.log')
+get_ipython().run_line_magic('pycat', 'files\\circuito_sencillo.log')
 
 # %% [markdown]
 #  ## Contenido del `.raw`:
 
 # %%
-get_ipython().run_line_magic('pycat', 'files\circuito_sencillo.raw')
+get_ipython().run_line_magic('pycat', 'files\\circuito_sencillo.net')
 
 # %% [markdown]
 #  Ahora repitamos lo mismo para el análisis `.dc`:
@@ -775,6 +790,12 @@ get_ipython().run_cell_magic('writefile', "'files\\circuito_sencillo.net'", '* E
 
 # %%
 lts "files\circuito_sencillo.net"
+# %%
+# # Al convertir a Python, VSCode introduce un cambio de línea entre cada celda y las celdas que usan el alias "lts" dan error de sintaxis al ejecutar. Usé esto para solucionarlo hasta que descubrí el porqué. Lo mantengo para consultas futuras. José Herce.
+# if platform.system() == "Darwin":
+#     get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/carrera_de_condensadores.net')
+# if platform.system() == "Windows":
+#     get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\carrera_de_condensadores.net')
 
 # %% [markdown]
 #  Al ejecutar esta simulación para el análisis `.dc`, el fichero `.raw` con los resultados es muchísimo más extenso. Para leer este fichero, y además, extraer los valores para la gráfica vamos a usar el paquete [ltspice de Python](https://github.com/DongHoonPark/ltspice_pytool), el cual se puede  instalar directamente desde Jupyter
@@ -798,9 +819,15 @@ plot.rcParams['font.size'] = 12
 fig, ax = plot.subplots()
 
 ax.set(xlabel='Voltaje (V)', ylabel='Intensidad (A)',
-       title='Circuito VDC ($\mathrm{10v}$) - Resistencia $\mathrm{100\ \Omega}$')
+       title='Circuito VDC ($\mathrm{10v}$) - Resistencia $\mathrm{100\ \Omega}$ - (LTspice)')
 ax.plot(voltaje, corriente)
+plot.grid()
 plot.show()
+
+nSvg += 1
+name = "Circuito_VDC_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #   ## Análisis de circuito con resistencias en serie
@@ -877,14 +904,19 @@ print(resultados['op'])
 #  Huelga decir que la carga de dos resistencias en serie es la suma de sus cargas, por lo que podríamos tratar el circuito como si de dos resistencias en serie se tratara. Una sería `R1` $\mathrm{(3k\Omega)}$ y la otra la suma de `R2`+`R3` $(\mathrm{10k\Omega}+\mathrm{5k\Omega}=\mathrm{15k\Omega})$ y la carga total sería `R1`+`R2`+`R3` $(\mathrm{3k\Omega}+\mathrm{10k\Omega}+\mathrm{5k\Omega}=\mathrm{18k\Omega})$
 # 
 #  Si calculamos manualmente la corriente, sabiendo que tenemos una diferencia de potencial de $\mathrm{9v}$ a los extremos de la pila, tenemos que:
+#  
 #  $$\mathrm{V}=\mathrm{R}\cdot\mathrm{I}$$
+#  
 #  $$\mathrm{I}=\frac{\mathrm{V}}{\mathrm{R}}=\frac{\mathrm{9v}}{\mathrm{18k\Omega}}=\mathrm{0.5\ mA}$$
+#  
 #  Que se corresponde con los $\mathrm{0.0005\ A}$ que nos ha devuelto `Ahkab` para `I(V1)`
 # 
 #  Puesto que las resistencias están en serie, el flujo de electrones en cada resistencia debe de ser el mismo, en concreto el equivalente a $\mathrm{0.5\ mA}$. Por tanto podemos calcular la caída de potencial en cada resistencia.
 # 
 #  $$\mathrm{V_1}=\mathrm{R_1}\cdot\mathrm{I}=\mathrm{3k\Omega}\cdot\mathrm{0.5\ mA}=\mathrm{1.5v}$$
+#  
 #  $$\mathrm{V_2}=\mathrm{R_2}\cdot\mathrm{I}=\mathrm{10k\Omega}\cdot\mathrm{0.5\ mA}=\mathrm{5v}$$
+#  
 #  $$\mathrm{V_3}=\mathrm{R_3}\cdot\mathrm{I}=\mathrm{5k\Omega}\cdot\mathrm{0.5\ mA}=\mathrm{2.5v}$$
 # 
 #  Como se puede observar, la suma de las caídas de potencial es exactamente la diferencia de potencial en los extremos de la pila, que también son los extremos de las tres resistencias.
@@ -927,7 +959,7 @@ print(resultados['op'])
 #  Volvemos a definir el netlist, esta vez para el orden coincida con los cálculos que hemos realizado.
 # 
 #  `v1` )---**1**---( `R1` )---**2**---( `R2` )---**3**---( `R3` )---**0**---( `v1`
-#  >```spice
+#  > ```spice
 #  v1 1 0 type=vdc vdc=9
 #  R1 1 2 3k
 #  R2 2 3 10k
@@ -976,7 +1008,7 @@ v2
 # %% [markdown]
 #  ### **Pregunta**:
 # 
-#  > Reproduce el resto de los valores anteriores de manera *manual* mediante Sympy (es decir, aplicando la ley de Ohm, pero con un *toque computacional*). Te pongo aquí un ejemplo del que puedes partir… En él sólo calculo la corriente que circula por el circuito (sí, justo la que antes Ahkab ha devuelto de manera automática). Para ello necesito previamente computar la resistencia total (`r_total`). Faltarían el resto de resultados y convertirlos a unidades más *vistosas* (mediante la orden `convert_to` y `.n()`).
+#   Reproduce el resto de los valores anteriores de manera *manual* mediante Sympy (es decir, aplicando la ley de Ohm, pero con un *toque computacional*). Te pongo aquí un ejemplo del que puedes partir… En él sólo calculo la corriente que circula por el circuito (sí, justo la que antes Ahkab ha devuelto de manera automática). Para ello necesito previamente computar la resistencia total (`r_total`). Faltarían el resto de resultados y convertirlos a unidades más *vistosas* (mediante la orden `convert_to` y `.n()`).
 
 # %%
 v1 = 9*volts
@@ -1035,10 +1067,9 @@ convert_to(solucion_para_voltaje_VCC_R3[0], [volts]).n(2)
 # %% [markdown]
 #  ### **Pregunta**:
 #  > Demuestra que se cumple la Ley de Kirchhoff de la energía en un circuito, es decir, que la suma de la energía suministrada por las fuentes (pilas) es igual a la consumida por las resistencias. Realiza la operación con Sympy.
-# 
-#  > $$
-#  \sum_i^N V_{\text{fuentes}} = \sum_j^M V_{\text{consumido en resistencias}}
-#  > $$
+# >
+#  > $$ \sum_i^N V_{\text{fuentes}} = \sum_j^M V_{\text{consumido en resistencias}}  $$
+#  >
 #  > Ten en cuenta que en este caso sólo hay una fuente.
 # %% [markdown]
 #  ### **Respuesta**:
@@ -1099,12 +1130,12 @@ resultados = ahkab.run(netlist, lista_de_análisis)
 print(resultados['op'])
 
 # %% [markdown]
-#  ### **Pregunta:**
+# > ### **Pregunta:**
 # 
 #  > Inserta dos *pilas virtuales* de 0 voltios en el resto de ramas del circuito (`Vdummy1` en la rama donde está `R5` y `Vdummy2` en la rama donde está `R3` y `R4`) para que Ahkab nos imprima también la corriente en las mismas. Es muy parecido al tercer circuito que tienes que resolver, donde `V1`, `V2` y `V3` tienen cero voltios. Estas *pilas nulas* son, a todos los efectos, *simples cables*. Una vez que ya tienes las corrientes en todas las ramas, comprueba que se cumple la Ley de Kirchhoff para las corrientes:
-# 
+# >
 #  > $$I_{\text{entrante}} = \sum_i^{N} I_{\text{salientes}}$$
-# 
+# >
 #  > Repite lo mismo para los otros dos circuitos. Realiza además los cálculos con Sympy (recalcula los mismos voltajes que devuelve Ahkab a partir de la corriente que sí te devuelve la simulación) y cuidando de no olvidar las unidades. Recuerda que el objeto `resultados` alberga toda la información que necesitas de manera indexada. Ya han aparecido un ejemplo más arriba. Es decir: no *copies* los números *a mano*, trabaja de manera informáticamente elegante (usando la variable `resultados`).
 # %% [markdown]
 #  ### **Respuesta**
@@ -1204,7 +1235,7 @@ convert_to(r_subcircuito[0], [ohms]).n(5)
 # 
 #  Veámoslo con números más redondos. Supongamos que una pila de $\mathrm{10\ v}$ aporta una corriente de $\mathrm{1\ A}$ a un circuito con dos cargas en paralelo, de las que no conocemos sus resistencias, pero sabemos que son iguales.
 # 
-#  La resistencia equivalente sería $\frac{\mathrm{10\ v}}{\mathrm{1\ A}}=\mathrm{10\ \Omega}$
+#  La resistencia equivalente sería $$\frac{\mathrm{10\ v}}{\mathrm{1\ A}}=\mathrm{10\ \Omega}$$
 # 
 #  Para que se cumpla la Ley de Kirchhoff, por cada rama deben circular $\mathrm{0.5\ A}$, por tanto la resistencias serán de $\mathrm{20\ \Omega}$
 # 
@@ -1221,16 +1252,20 @@ convert_to(equiv[0], [ohms]).n(5)
 
 # %% [markdown]
 #  Nos falta por comprobar que los voltajes de cada nodo devueltos por `Ahkab` son correctos.
-#  #### Voltaje en el nodo 2 según `Ahkab`:")
+#  
+#  #### Voltaje en el nodo 2 según `Ahkab`:
 
 # %%
+print("Voltaje en el nodo 2 (Ahkab):")
 resultados['op'].results._dict['V2']*volts
 
 # %% [markdown]
-#  #### Comprobamos el voltaje en el nodo 2 con Sympy:")
+# Coincide.
+# 
+# #### Comprobamos el voltaje en el nodo 2 con Sympy:
 
 # %%
-print("Voltaje en el nodo 2:")
+print("Voltaje en el nodo 2 (Sympy):")
 v = symbols('v')
 intensidad = -resultados['op'].results._dict['I(VDD)']*amperes 
 ley_ohm = Eq(v, intensidad*equiv[0])
@@ -1238,23 +1273,30 @@ voltaje_V2 = solve(ley_ohm, v)
 convert_to(voltaje_V2[0], [volts]).n(3)
 
 # %% [markdown]
-#  #### Voltaje en el nodo 3 según `Ahkab`:")
+# También coincide.
+# 
+# #### Voltaje en el nodo 3 según `Ahkab`:")
 
 # %%
+print("Voltaje en el nodo 3 (Ahkab):")
 resultados['op'].results._dict['V3']*volts
 
 # %% [markdown]
-#  #### Comprobamos el voltaje en el nodo 3 con Sympy:")
+# También coincide.
+# 
+# #### Comprobamos el voltaje en el nodo 3 con Sympy:")
 
 # %%
-print("Voltaje en el nodo 3:")
+print("Voltaje en el nodo 3 (Sympy):")
 v = symbols('v')
 ley_ohm = Eq(v, intensidad_dummy2*r4)
 voltaje_V3 = solve(ley_ohm, v)
 convert_to(voltaje_V3[0], [volts]).n(3)
 
 # %% [markdown]
-#  ### **Análisis del segundo circuito**
+# También coincide.
+# 
+# ### **Análisis del segundo circuito**
 # 
 #   ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_paralelo_2_lab_fisica.svg?sanitize=true)
 # 
@@ -1462,6 +1504,7 @@ r3 = 1*kilo*ohms
 
 # %% [markdown]
 #  Calculemos la resistencia equivalente de las 3 malla del modo que hemos visto en el primer circuito.
+#  
 #  $$ \frac{ 1 }{ R_{eqv} }=\sum_i^{n} \frac{ 1 }{ R_i } $$
 
 # %%
@@ -1501,7 +1544,9 @@ i_R1 = solve(ley_ohm, i)
 convert_to(i_R1[0], [amperes]).n(5)
 
 # %% [markdown]
-#   #### La corriente que pasa por `R2` según `Ahkab` es:
+# Bien, coinciden.
+# 
+# #### La corriente que pasa por `R2` según `Ahkab` es:
 
 # %%
 intensidad_malla2
@@ -1516,13 +1561,15 @@ i_R2 = solve(ley_ohm, i)
 convert_to(i_R2[0], [amperes]).n(5)
 
 # %% [markdown]
-#   #### La corriente que pasa por `R3` según `Ahkab` es:
+# Perfecto, también coinciden !!!
+# 
+# #### La corriente que pasa por `R3` según `Ahkab` es:
 
 # %%
-intensidad_malla2
+intensidad_malla3
 
 # %% [markdown]
-#  #### Comprobamos la corriente que pasa por `R3` con Sympy:
+# #### Comprobamos la corriente que pasa por `R3` con Sympy:
 
 # %%
 i = symbols('i')
@@ -1531,6 +1578,8 @@ i_R3 = solve(ley_ohm, i)
 convert_to(i_R3[0], [amperes]).n(5)
 
 # %% [markdown]
+# Genial, también coinciden !!!
+# 
 #   # Circuitos en DC que evolucionan con el tiempo
 # %% [markdown]
 #   ## Carga de un condensador
@@ -1593,10 +1642,16 @@ print(resultados['op'])
 plot.rcParams['font.size'] = 12
 plot.rcParams['figure.figsize'] = [4.32*2.3, 2.28*1.5]
 
-figura = plt.figure()
-plt.title("Carga de un condensador")
+fig = plt.figure()
+plt.title("Carga de un condensador - (Ahkab)")
 plt.plot(resultados['tran']['T'], resultados['tran']
          ['I(V1)'], label="Una etiqueta")
+plt.grid()
+
+nSvg = 1
+name = "Carga_de_un_condensador_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #  #### **Pregunta:**
@@ -1632,13 +1687,13 @@ set_matplotlib_formats('svg')
 #  Además de etiquetar los ejes, para una mayor claridad, también vamos a remapear los datos a valores absolutos.
 
 # %%
-plot.rcParams['font.size'] = 12
+plot.rcParams['font.size'] = 10
 plot.rcParams['figure.figsize'] = [4.32*2, 2.28*1.5]
 
 fig, ax = plot.subplots()
 ax.set(xlabel='Tiempo (s)', 
     ylabel='Intensidad (A)', 
-    title='Circuito RC serie - ($\mathrm{6v}$) - Resistencia $\mathrm{1\ k\Omega}$ - Condensador $\mathrm{1\ mF}$')
+    title='Circuito RC serie - ($\mathrm{6v}$) - Resistencia $\mathrm{1\ k\Omega}$ - Condensador $\mathrm{1\ mF}$ - Intensidad Total - (Ahkab)')
 x = resultados['tran']['T']
 y = resultados['tran']['I(V1)']
 f = lambda x: -x if x < 0 else x
@@ -1664,13 +1719,13 @@ fig.savefig(fig_directory_html + 'fig_current_RC.svg', transparent='true', forma
 #  #### Dibuja otra gráfica con el voltaje en el borne `V1`. ¿Por qué son *opuestas*? ¿Qué le ocurre al voltaje a medida que evoluciona el circuito en el tiempo?
 
 # %%
-plot.rcParams['font.size'] = 12
+plot.rcParams['font.size'] = 11
 plot.rcParams['figure.figsize'] = [4.32*2, 2.28*1.5]
 
 fig, ax = plot.subplots()
 ax.set(xlabel='Tiempo (s)', 
     ylabel='Tensión (V)', 
-    title='Circuito RC serie - ($\mathrm{6v}$) - Resistencia $\mathrm{1\ k\Omega}$ - Condensador $\mathrm{1\ mF}$')
+    title='Circuito RC serie - ($\mathrm{6v}$) - Resistencia $\mathrm{1\ k\Omega}$ - Condensador $\mathrm{1\ mF}$ - Voltaje en V1 - (Ahkab)')
 x = resultados['tran']['T']
 y = resultados['tran']['V1']
 f = lambda x: -x if x < 0 else x
@@ -1706,7 +1761,7 @@ line_C1.set_label('Voltaje extremos C1')
 
 ax.set(xlabel='Tiempo (s)', 
     ylabel='Tensión (V)', 
-    title='Circuito RC serie - ($\mathrm{6v}$) - Resistencia $\mathrm{1\ k\Omega}$ - Condensador $\mathrm{1\ mF}$')
+    title='Circuito RC serie - ($\mathrm{6v}$) - Resistencia $\mathrm{1\ k\Omega}$ - Condensador $\mathrm{1\ mF}$ - Voltajes - (Ahkab)')
 
 plot.legend()
 plot.grid()
@@ -1741,7 +1796,9 @@ plot.show()
 #  No sería absurdo plantearse la siguiente cuestión. Si, la resistencia de `R1` es constante, el voltaje de la fuentes es constante, pero la corriente cambia en el tiempo, ¿Qué está pasando?, acaso, ¿el condensador tiene resistencia?, es más, ¿acaso la resistencia del condensador varía? Pues sí, además no pude ser de otro modo, no existe otra explicación que cumpla la Ley de Ohm. Pero no, en realidad los condensadores no tienen resistencia, o no exactamente, sino que la magnitud en la que se oponen al flujo de electrones está estrechamente ligada a la diferencia de potencial entre sus extremos. Es decir, cuando está ausente de carga (no hay diferencia de potencial en sus extremos) su resistencia, o mejor, llamémoslo por su nombre, su ***impedancia*** es $\mathrm{0\ \Omega}$.
 # 
 #  Para, para, para…, ¿cómo cero?, entonces, si su resistencia es 0, o mejor dicho, si su ***impedancia*** es 0. Si le aplicamos voltaje, según la Ley de Ohm…
+#  
 #  $$\mathrm{V=R\cdot I\ \rightarrow}\ I=\frac{\mathrm{V}}{\mathrm{R}}\mathrm{\ \rightarrow}\ I=\frac{\mathrm{V} }{\mathrm{0}}=\infty  $$
+#  
 #  ¿Es esto posible? Pues sí, así es, la corriente se iría a infinito. Esto es lo que en electrónica llamamos un *cortocircuito*. Por suerte, esto solo dura un instante, y aunque la fuente fuera capaz de suministrar tal cantidad de corriente (que no lo es), en cuanto el condensador empieza a cargarse, su impedancia aumenta rápidamente, y por suerte no agota todos los recursos energéticos que nos quedan.
 #  Este es el motivo por el que, en electrónica, a la resistencia que a menudo acompaña en serie al condensador, la llamamos *"limitadora de corriente"*, ya que garantiza que siempre haya una mínima resistencia y evite que el flujo de corriente sea infinito, y nos quedemos sin energía. Aunque hay alguna que otra posibilidad de que algo explote o se queme y nos libre de agotar la energía.
 # %% [markdown]
@@ -1786,7 +1843,9 @@ print(resultados['op'])
 # %% [markdown]
 #  #### **Respuesta:**
 # 
-#  Ambos se cargarán al mismo tiempo, debido a que están en paralelo entre sí y en serie con una resistencia común, lo que va a provocar que ambas tenga la misma tensión.# %%
+# El circuito consta únicamente de una resistencia en serie con los dos condensadores en paralelo entre sí. Puesto que la resistencia de la resistencia (valga la redundancia), es constante, el voltaje en esta también es constante, por lo que según Kirchhoff, la tensión en los extremos de los condensadores es la diferencia del voltaje de la fuente menos el de la resistencia. Por lo que con cables ideales ($\mathrm{0\ \Omega}$), el voltaje de cada condensador es el mismo.
+# 
+# Sin embargo, el flujo de corriente será diferente por cada condensador. La suma de ambas corrientes será igual a la intensidad de la *resistencia limitadora de corriente*. Esto es debido a que, aunque los condensadores no tienen resistencia, sí que tienen impedancia, que al igual que la resistencia es una cuantificación del cuanto se opone un elemento al flujo de corriente. Pero a diferencia de la resistencia, la impedancia varía en el tiempo, puesto que su valor depende de un estado anterior. Es por lo que en circuitos de corriente continua, en donde los parámetros se mantienen en un mismo estado (tras un tiempo inicial de estabilización), lo habitual es hablar en términos de resistencia. Pero en circuitos de corriente alterna, donde los parámetros están en constante cambio, se habla en términos de impedancia.
 
 # %%
 get_ipython().run_cell_magic('writefile', '"files\\carrera_de_condensadores.ckt"', '* Carga condensador\nv0 1 0 type=vdc vdc=10\nr1 0 2 3.3k\nc1 2 3 47u ic=0\nv1dummy 3 1 type=vdc vdc=0\nc2 2 4 22u ic=0\nv2dummy 4 1 type=vdc vdc=0\n.tran tstep=0.01 tstart=6.5 tstop=9 uic=0\n.end')
@@ -1812,13 +1871,25 @@ for análisis in [d for i, d in enumerate(lista_de_análisis) if "dc" in d.value
 # %%
 resultados = ahkab.run(netlist, lista_de_análisis)
 
+# %% [markdown]
+# Dibujamos la gráfica, convirtiendo los valores de las corrientes que devuelve Ahkab a valores absolutos. De lo contrario la gráfica sería más representativa de lo que sucede en la fase descarga del condensador, donde veríamos que si aparece corriente negativa, debido a que cuando los condensadores se descargan el sentido del flujo de los electrones es el contrario, pero la corriente seria la misma, al igual, las diferencias de potencial, que siempre las veremos en términos absolutos.
+# 
+# Tal vez sea interesante puntualizar que es cada casa.
+# * **Diferencia de Potencial**: Se mide en voltios ($\mathrm{V}$). Está definida por la cantidad existente de electrones libres, o **potencialmente** libres, es decir, electrones de valencia. Representa la predisposición al flujo electrónico entre dos puntos. Siempre es positiva puesto que cuantifica la diferencia entre dos puntos cuales quiera, pudiendo estos tener potencial nulo, o no.
+# * **Voltaje o Tensión eléctrica**: Es la diferencia de potencial entre un punto y un potencial de referencia (Tensión de referencia), normalmente, tierra o punto de masa. La *Tensión de referencia* es el potencial de referencia para un circuito, al que se le considera de potencial nulo, aunque en la práctica no tiene por qué ser nulo, simplemente la masa o tierra se considera con potencial cero, puesto que es la referencia de partida para el resto del circuito. El valor puede ser negativo. Al existir un valor de referencia considerado nulo, todo lo que se considere de menor potencial que la referencia se expresa en términos negativos. 
+# * **Intensidad**: Se mide en amperios ($\mathrm{A}$). Está definida por la cantidad de electrones que pasan por un punto en un instante dado. Representa la cantidad de flujo electrónico. Siempre es positiva, puesto que solo mide la cantidad de flujo, no importa el sentido de este.
+# * **Corriente eléctrica**: Se mide en amperios ($\mathrm{A}$). Está definida por la cantidad de electrones que pasan por un punto en un instante dado. Representa el flujo electrónico a razón de una referencia. Por convención cuando el flujo proviene de un punto considerado con mayor potencial, la corriente se expresa en términos positivo, para un flujo de sentido contrario, se expresa en términos negativos.
+# 
+# Es muy habitual usar indistintamente los temimos *Potencial* o *Voltaje*, así como, *Corriente* o *Intensidad*. Yo mismo lo he hecho a lo largo de este escrito. Pero si somos estrictos, no son exactamente lo mismo.
+# 
+# Aquí la gráfica:
 
 # %%
 plot.rcParams['font.size'] = 12
 plot.rcParams['figure.figsize'] = [4.32*2.6, 2.28*2]
 
-figura, ax = plt.subplots()
-plt.title("Carrera de condensadores")
+fig, ax = plt.subplots()
+plt.title("Carrera de condensadores - Intensidades Condensadores - (Ahkab)")
 ax.set(xlabel='Tiempo (s)', ylabel='Corriente (A)')
 plt.xlim(6.5*0.99, 9*1.01)
 plt.ylim(-0.0001, 0.002)
@@ -1829,6 +1900,11 @@ plt.plot(list(map(lambda x: -x if x < 0 else x, resultados['tran']['T'])),
 plt.plot(list(map(lambda x: -x if x < 0 else x, resultados['tran']['T'])), 
     list(map(lambda x: -x if x < 0 else x, resultados['tran']['I(V2DUMMY)'])), 
     label="Intensidad en C2")
+plt.legend()
+nSvg = 1;
+name = "Carrera_de_condensadores_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 
 # %%
@@ -1841,11 +1917,11 @@ i_C2 = list(map(f, i_C2))
 i_R1 = resultados['tran']['I(V0)']
 i_R1 = list(map(f, i_R1))
 
-plot.rcParams['font.size'] = 12
+plot.rcParams['font.size'] = 11
 plot.rcParams['figure.figsize'] = [4.32*2.3, 2.28*2]
 
 fig, ax = plot.subplots()
-plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
+plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$ - Comparativa Intensidades - (Ahkab)')
 ax.set(xlabel='Tiempo (s)', ylabel='Corriente (A)')
 line_iC1, = ax.plot(tiempo, i_C1)
 line_iC2, = ax.plot(tiempo, i_C2)
@@ -1858,8 +1934,15 @@ plot.grid(True)
 plot.tight_layout()
 plot.show()
 
+nSvg += 1;
+name = "Carrera_de_condensadores_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
+
 # %% [markdown]
-#  Se puede observar la corriente de ambos condensadores y la de la resistencia, que es la misma que la total del circuito, aunque su bajada es diferente, se acercan a cero prácticamente a la vez.
+# Se puede observar la corriente de ambos condensadores y la de la resistencia, que es la misma que la total del circuito. Aunque sus bajadas son diferentes, se acercan a cero prácticamente a la vez. 
+# 
+# Respecto a la pregunta de qué condensador satura primero, se podría decir que está libre a la interpretación. Matemáticamente la función que define la corriente para cada condensador representa una curva que, en ambos casos, se aproxima asintóticamente a cero, por lo que se podría considerar que ninguno de los condensadores llega nunca a saturar. Pero en la práctica, a partir de cierto punto se considera que no hay flujo eléctrico, entonces, sea cual sea el umbral que se establezca, será C2 el que primero lo alcance, que es el condensador de menor capacidad.
 
 # %%
 tiempo = resultados['tran']['T']
@@ -1874,7 +1957,7 @@ plot.rcParams['font.size'] = 12
 plot.rcParams['figure.figsize'] = [4.32*2.3, 2.28*2]
 
 fig, ax = plot.subplots()
-plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
+plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$ - Comparativa Volatajes - (Ahkab)')
 ax.set(xlabel='Tiempo (s)', ylabel='Voltios (V)')
 ax.grid(True)
 
@@ -1894,6 +1977,11 @@ line_vR1.set_c('tab:red')
 plot.legend()
 plot.tight_layout()
 
+nSvg += 1;
+name = "Carrera_de_condensadores_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
+
 # %% [markdown]
 #  Puesto que el voltaje de la fuente no cambia, se reparten la diferencia de potencial entre la resistencia y los dos condensadores.
 # 
@@ -1905,7 +1993,7 @@ plot.rcParams['figure.figsize'] = [4.32*2.3, 2.28*2]
 
 fig, ax1 = plot.subplots()
 ax2 = ax1.twinx()  
-plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$') 
+plot.title('Circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$ - All in one - (Ahkab)') 
 ax1.set_xlabel('Tiempo (s)') 
 ax1.set_ylabel('Corriente (A)')
 ax2.set_ylabel('Voltios (V)')
@@ -1930,6 +2018,11 @@ plot.legend(
     ("Corriente C1", "Corriente C2", "Corriente R1", "Voltios C1", "Voltios C2", "Voltios R1"))
 fig.tight_layout()  
 plt.show()
+
+nSvg += 1;
+name = "Carrera_de_condensadores_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #  ### **Ejercicio premium:**
@@ -1979,11 +2072,13 @@ get_ipython().run_cell_magic('writefile', '"files\\carrera_de_condensadores.net"
 #  Ejecutamos LTspice pasando al ejecutable el archivo que acabamos de crear como parámetro.
 
 # %%
-# lts "files\carrera_de_condensadores.net"
-if platform.system() == "Darwin":
-    get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/carrera_de_condensadores.net')
-if platform.system() == "Windows":
-    get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\carrera_de_condensadores.net')
+lts "files\carrera_de_condensadores.net"
+# %%
+# # Al convertir a Python, VSCode introduce un cambio de línea entre cada celda y las celdas que usan el alias "lts" dan error de sintaxis al ejecutar. Usé esto para solucionarlo hasta que descubrí el porqué. Lo mantengo para consultas futuras. José Herce.
+# if platform.system() == "Darwin":
+#     get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/carrera_de_condensadores.net')
+# if platform.system() == "Windows":
+#     get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\carrera_de_condensadores.net')
 
 # %% [markdown]
 #  Veamos el contenido del archivo, `.log`.
@@ -1991,7 +2086,7 @@ if platform.system() == "Windows":
 #  ## Contenido del `.log`:
 
 # %%
-get_ipython().run_line_magic('pycat', 'files\carrera_de_condensadores.log')
+get_ipython().run_line_magic('pycat', 'files\\carrera_de_condensadores.log')
 
 # %% [markdown]
 #  Ahora extraemos los datos del archivo `.raw`.
@@ -2014,11 +2109,11 @@ v_Cs = list(map(f, v_Cs, v_R1))
 #  Dibujamos las gráficas con los datos obtenidos con LTspice.
 
 # %%
-plot.rcParams['font.size'] = 12
+plot.rcParams['font.size'] = 9.5
 plot.rcParams['figure.figsize'] = [4.32*2.3, 2.28*2]
 
 fig, ax = plot.subplots()
-plot.title('Corrientes circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
+plot.title('Corrientes circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$ - Comparativa Intensidades - (LTspice)')
 ax.set(xlabel='Tiempo (s)', ylabel='Corriente (A)')
 
 line_iC1, = ax.plot(tiempo, i_C1)
@@ -2035,13 +2130,18 @@ plot.grid(True)
 plot.tight_layout()
 plot.show()
 
+nSvg += 1;
+name = "Carrera_de_condensadores_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
+
 
 # %%
-plot.rcParams['font.size'] = 12
+plot.rcParams['font.size'] = 10
 plot.rcParams['figure.figsize'] = [4.32*2.3, 2.28*2]
 
 fig, ax = plot.subplots()
-plot.title('Voltajes circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$')
+plot.title('Voltajes circuito carrera condensadores - ($\mathrm{10v}$) - C1:$\mathrm{47\mu\Omega}$ - C2:$\mathrm{22\mu\Omega}$  - Comparativa Voltajes - (LTspice)')
 ax.set(xlabel='Tiempo (s)', ylabel='Voltios (V)')
 
 line_vC2, = ax.plot(tiempo, v_Cs)
@@ -2059,16 +2159,16 @@ line_vC1.set_c('tab:blue')
 ax.grid(True)
 plot.legend()
 plot.tight_layout()
-# plt.savefig("test.svg", format="svg")
-# plot.rcParams['figure.figsize'] = [6.4*1.9, 4.8]
-# plot.rcParams['font.size'] = 12
 
-# {'tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan'}
+nSvg += 1;
+name = "Carrera_de_condensadores_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #  ## Circuitos en corriente alterna
 # 
-#  ### ** Ejercicio:**
+#  ### **Ejercicio:**
 # 
 #  Simula este circuito con LTspice y representa el voltaje y la intensidad en función del tiempo. Traduce este ejercicio a la versión Spice de Akhab y haz la misma representación. Ahkab utiliza otra sintaxis para expresar la corriente alterna. Esta está descrita en la [documentación](https://ahkab.readthedocs.io/en/latest/help/Netlist-Syntax.html#id24).
 #  ```* Circuito en corriente alterna
@@ -2078,7 +2178,7 @@ plot.tight_layout()
 #  .end
 #  ```
 # %% [markdown]
-#  ### ** Solución:**
+#  ### **Solución:**
 # 
 #  ![](https://raw.githubusercontent.com/tikissmikiss/Laboratorio-LTspice/master/resource/Circuito_alterna_lab_fisica.svg?sanitize=true)
 # 
@@ -2091,11 +2191,13 @@ get_ipython().run_cell_magic('writefile', '"files\\corriente_alterna.net"', '* C
 #  Ejecutamos LTspice con el netlist como parámetro para generar los archivos `.log` y `.raw`.
 
 # %%
-# lts "files\corriente_alterna.net"
-if platform.system() == "Darwin":
-    get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/corriente_alterna.net')
-if platform.system() == "Windows":
-    get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\corriente_alterna.net')
+lts "files\corriente_alterna.net"
+# %%
+# # Al convertir a Python, VSCode introduce un cambio de línea entre cada celda y las celdas que usan el alias "lts" dan error de sintaxis al ejecutar. Usé esto para solucionarlo hasta que descubrí el porqué. Lo mantengo para consultas futuras. José Herce.
+# if platform.system() == "Darwin":
+#     get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/carrera_de_condensadores.net')
+# if platform.system() == "Windows":
+#     get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\carrera_de_condensadores.net')
 
 # %% [markdown]
 #  Ahora extraemos los datos relativos al tiempo, la corriente y tensión del archivo `.raw` y los almacenamos en vectores diferentes.
@@ -2107,7 +2209,6 @@ l.parse()
 tiempo = l.get_time()
 vac = l.get_data('V(1)')
 i_R1 = l.get_data('I(R1)')
-nSvg=0
 
 # %% [markdown]
 #  Representamos los datos obtenidos con LTspice en una misma gráfica.
@@ -2120,7 +2221,7 @@ rojo='tab:red'
 verde='tab:green'
 
 fig, ax_V = plot.subplots()
-plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - LTspice')
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - Tensión VS Intensidad - All data - (LTspice)')
 ax_I = ax_V.twinx()  
 
 ax_V.tick_params(axis='y', labelcolor=verde)
@@ -2140,9 +2241,11 @@ line_I.set_c(rojo)
 
 plot.grid(True)
 plot.tight_layout()
-nSvg += 1
-fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
-fig.savefig(fig_directory_html + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
+
+nSvg = 1;
+name = "Circuito_Corriente_Alterna_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #  Hemos representado la señal en el transcurso de 1 segundo y es difícil de apreciar la señal con claridad.
@@ -2157,7 +2260,7 @@ verde='tab:green'
 
 fig, ax_V = plot.subplots()
 ax_V.set_xlim(0, 1/20)
-plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - LTspice')
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - Tensión VS Intensidad - 3 cicles data - (LTspice)')
 ax_I = ax_V.twinx()  
 
 ax_V.tick_params(axis='y', labelcolor=verde)
@@ -2177,9 +2280,11 @@ line_I.set_c(rojo)
 
 plot.grid(True)
 plot.tight_layout()
-nSvg += 1
-fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
-fig.savefig(fig_directory_html + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
+
+nSvg += 1;
+name = "Circuito_Corriente_Alterna_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #  Vaya,... Parece que se ha perdido algo de calidad en la representación y la onda no se ve todo lo suavizada que debería. Esto es debido a que hemos pedido a LTspice que muestre la señal durante un segundo, por lo que ha adaptado el sampling rate a ese tiempo. Ahora, al dibujar solo 0.05 segundos, el número de muestras contenidas en ese tiempo es relativamente bajo, y por eso podemos apreciar en el gráfico vectorial los vectores rectos que dibujan la curva, apreciándose los vértices donde confluyen dos vectores.
@@ -2193,12 +2298,16 @@ get_ipython().run_cell_magic('writefile', '"files\\corriente_alterna.net"', '* C
 
 
 # %%
-# lts "files\corriente_alterna.net"
-if platform.system() == "Darwin":
-    get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/corriente_alterna.net')
-if platform.system() == "Windows":
-    get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\corriente_alterna.net')
+lts "files\corriente_alterna.net"
+# %%
+# # Al convertir a Python, VSCode introduce un cambio de línea entre cada celda y las celdas que usan el alias "lts" dan error de sintaxis al ejecutar. Usé esto para solucionarlo hasta que descubrí el porqué. Lo mantengo para consultas futuras. José Herce.
+# if platform.system() == "Darwin":
+#     get_ipython().system('/Applications/LTspice.app/Contents/MacOS/LTspice -ascii -b files/carrera_de_condensadores.net')
+# if platform.system() == "Windows":
+#     get_ipython().system('"C:\\Program Files\\LTC\\LTspiceXVII\\XVIIx64.exe" -ascii -b files\\carrera_de_condensadores.net')
 
+
+# %%
 l = ltspice.Ltspice("files\corriente_alterna.raw")
 l.parse()
 
@@ -2214,7 +2323,7 @@ plot.rcParams['figure.figsize'] = [4.32*3, 2.28*2]
 
 fig, ax_V = plot.subplots()
 ax_V.set_xlim(0, 1/20)
-plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - LTspice')
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - Tensión VS Intensidad - 3 cicles rebuild - (LTspice)')
 ax_I = ax_V.twinx()  
 
 ax_V.tick_params(axis='y', labelcolor=verde)
@@ -2235,9 +2344,11 @@ line_I.set_c(rojo)
 # plot.legend()
 plot.grid(True)
 plot.tight_layout()
-nSvg += 1
-fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
-fig.savefig(fig_directory_html + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
+
+nSvg += 1;
+name = "Circuito_Corriente_Alterna_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
 
 # %% [markdown]
 #  Ahora sí, otra cosa es esto. Como podemos apreciar en la gráfica, el voltaje y la corriente evolucionan con una proporcionalidad inversa de 10000:1, justamente el número de ohmios que tiene una resistencia de $\mathrm{10\ k\Omega}$ como la de nuestro circuito. ¿Qué porqué coincide?, pues por la Ley de Ohm, para $\mathrm{10\ k\Omega}$ hacen falta $\mathrm{10\ kV}$ para tener $\mathrm{1\ A}$.
@@ -2282,7 +2393,7 @@ plot.rcParams['font.size'] = 12
 plot.rcParams['figure.figsize'] = [4.32*3, 2.28*2]
 
 fig, ax_V = plot.subplots()
-plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - Ahkab')
+plot.title('Circuito Corriente Alterna - ($\mathrm{10v}$) - VAC:$\mathrm{120v}$-$\mathrm{60Hz}$ R:$\mathrm{10k\Omega}$ - Tensión VS Intensidad - (Ahkab)')
 ax_I = ax_V.twinx()  
 
 ax_V.tick_params(axis='y', labelcolor=verde)
@@ -2302,12 +2413,121 @@ line_I.set_c(rojo)
 
 plot.grid(True)
 plot.tight_layout()
+
 nSvg += 1
-fig.savefig(fig_directory + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
-fig.savefig(fig_directory_html + 'alterna' + str(nSvg) + '.svg', transparent='true', format='svg')
+name = "Circuito_Corriente_Alterna_"
+fig.savefig(fig_directory + name + str(nSvg) + '.svg', transparent='true', format='svg')
+fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', format='svg')
+
+# %% [markdown]
+# ## Para finalizar vamos a mostrar toda la colección de archivos `.svg` que hemos ido generando, para deleite de los que usamos un tema oscuro.
+# %% [markdown]
+# ### Prueba DC
+# 
+# .\figuras\Prueba_DC_1.svg
+# 
+# ![](.\figuras\Prueba_DC_1.svg?sanitize=true)
+# ***
+# 
+# 
+# ### Circuito VDC
+# 
+# .\figuras\Circuito_VDC_1.svg
+# 
+# ![](.\figuras\Circuito_VDC_1.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Circuito_VDC_2.svg
+# 
+# ![](.\figuras\Circuito_VDC_2.svg?sanitize=true)
+# ***
+# 
+# 
+# ### Circuito RC
+# 
+# .\figuras\fig_current_RC.svg
+# 
+# ![](.\figuras\fig_current_RC.svg?sanitize=true)
+# ***
+# 
+# .\figuras\fig_volts_r1_&\_c1_RC.svg
+# 
+# ![](.\figuras\fig_volts_r1_&_c1_RC.svg?sanitize=true)
+# ***
+# 
+# .\figuras\fig_volt_RC.svg
+# 
+# ![](.\figuras\fig_volt_RC.svg?sanitize=true)
+# ***
+# 
+# .\figuras\fig_volts_c1_RC.svg
+# 
+# ![](.\figuras\fig_volts_c1_RC.svg?sanitize=true)
+# ***
+# 
+# 
+# ### Carga de un condensador
+# 
+# .\figuras\Carga_de_un_condensador_1.svg
+# 
+# ![](.\figuras\Carga_de_un_condensador_1.svg?sanitize=true)
+# ***
+# 
+# ### Carrera de condensadores
+# 
+# .\figuras\Carrera_de_condensadores_1.svg
+# 
+# ![](.\figuras\Carrera_de_condensadores_1.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Carrera_de_condensadores_2.svg
+# 
+# ![](.\figuras\Carrera_de_condensadores_2.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Carrera_de_condensadores_3.svg
+# 
+# ![](.\figuras\Carrera_de_condensadores_3.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Carrera_de_condensadores_4.svg
+# 
+# ![](.\figuras\Carrera_de_condensadores_4.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Carrera_de_condensadores_5.svg
+# 
+# ![](.\figuras\Carrera_de_condensadores_5.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Carrera_de_condensadores_6.svg
+# 
+# ![](.\figuras\Carrera_de_condensadores_6.svg?sanitize=true)
+# ***
+# 
+# 
+# 
+# ### Circuito Corriente Alterna
+# 
+# .\figuras\Circuito_Corriente_Alterna_1.svg
+# 
+# ![](.\figuras\Circuito_Corriente_Alterna_1.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Circuito_Corriente_Alterna_2.svg
+# 
+# ![](.\figuras\Circuito_Corriente_Alterna_2.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Circuito_Corriente_Alterna_3.svg
+# 
+# ![](.\figuras\Circuito_Corriente_Alterna_3.svg?sanitize=true)
+# ***
+# 
+# .\figuras\Circuito_Corriente_Alterna_4.svg
+# 
+# ![](.\figuras\Circuito_Corriente_Alterna_4.svg?sanitize=true)
+# ***
 
 
 # %%
-
-
-

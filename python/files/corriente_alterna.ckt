@@ -1,0 +1,5 @@
+* Circuito alterna
+V1 1 0 type=sin vo=0 va=120 freq=60
+R1 0 1 10k
+.tran tstep=0.0001 tstart=0 tstop=0.05
+.end

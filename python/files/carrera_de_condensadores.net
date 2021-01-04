@@ -1,0 +1,7 @@
+* Carga condensador
+v0 1 0 PWL(6.5 0 6.51 10)
+r1 2 0 3.3k
+c1 1 2 47u
+c2 1 2 22u 
+.tran 0 8 6.4 0.01 uic
+.end

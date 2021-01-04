@@ -1,0 +1,7 @@
+* Este es un circuito sencillo adaptado para LTspice
+r1 1 0 100
+v1 0 1 9
+* Comentamos el análisis .op para centrarnos primero en el .dc
+* .op
+.dc v1 1 10 10
+.end

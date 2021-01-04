@@ -1,0 +1,11 @@
+* resistencias en paralelo
+v1 1 0 vdc=9 type=vdc
+v2 4 0 vdc=1.5 type=vdc
+vdummy 6 0 vdc=0 type=vdc
+r1 1 2 47
+r2 2 3 220
+r3 2 4 180
+r4 3 5 1k
+r5 5 6 560
+.op
+.end
