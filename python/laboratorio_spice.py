@@ -1,8 +1,3 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
-from IPython import get_ipython
-
 # %% [markdown]
 #  # **LABORATORIO SIMULACIÓN SPICE** 
 #   ###  *Powered by José Herce. Inspired by the work of Dr. Alberto Corbi.* 04/01/2021
@@ -26,7 +21,7 @@ from IPython import get_ipython
 # **Enumera todos los intérprete de Spice que puedas encontrar. Crea una tabla en Markdown con varias columnas (para el nombre, fabricante, versión actual, licencia y alguna característica sobresaliente). Aquí tienes un ejemplo del que puedes partir y seguir completando:**
 #  
 # |Intérprete  | Licencia                      | Fabricante                        | Características  |
-# |----------- | ------------------------------| --------------------------------- | ---------------- |
+# |:-----------|:---------------------------|:------------------------------|:----------------|
 # |Ahkab       | GPL  | Giuseppe Venturini                | Basado en Python |
 # |LTspice     | Gratuito    | Linear Technology, Analog Devices |                  |
 # |PSpice      | Propietaria    | Cadence Design Systems            |                  |
@@ -139,18 +134,18 @@ from IPython import get_ipython
 # 
 # > **Respuesta:** 
 # 
-# | Prefijo | Valor | Simbolo | | Prefijo | Valor | Simbolo |
-# | - | - | - | - | - | - | - |
-# | yotta | $10^{24}$ | Y | | deci | $10^{-1}$ | d |
-# | zetta | $10^{21}$ | Z | | centi | $10^{-2}$ | c |
-# | exa | $10^{18}$ | E | | mili | $10^{-3}$ | m |
-# | peta | $10^{15}$ | P | | micro | $10^{-6}$ | µ |
-# | tera | $10^{12}$ | T | | nano | $10^{-9}$ | n |
-# | giga | $10^{9}$ | G | | pico | $10^{-12}$ | p |
-# | mega | $10^{6}$ | M | | femto | $10^{-15}$ | f |
-# | kilo | $10^{3}$ | k | | atto | $10^{-18}$ | a |
-# | hecto | $10^{2}$ | h | | zepto | $10^{-21}$ | z |
-# | deca | $10^{1}$ | da | | yocto | $10^{-24}$ | y |
+#   |  Prefijo  |  Valor      |  Simbolo  |  Prefijo  |   Valor        |  Simbolo  |
+#   |:----------|------------:|:---------:|:---------:|:--------------:|:---------:|
+#   |  yotta    |  $$10^{24}$$  |  Y        |  deci     |   $$10^{-1}$$    |  d        |
+#   |  zetta    |  $$10^{21}$$  |  Z        |  centi    |   $$10^{-2}$$    |  c        |
+#   |  exa      |  $$10^{18}$$  |  E        |  mili     |   $$10^{-3}$$    |  m        |
+#   |  peta     |  $$10^{15}$$  |  P        |  micro    |   $$10^{-6}$$    |  µ        |
+#   |  tera     |  $$10^{12}$$  |  T        |  nano     |   $$10^{-9}$$    |  n        |
+#   |  giga     |  $$10^{9}$$   |  G        |  pico     |   $$10^{-12}$$   |  p        |
+#   |  mega     |  $$10^{6}$$   |  M        |  femto    |   $$10^{-15}$$   |  f        |
+#   |  kilo     |  $$10^{3}$$   |  k        |  atto     |   $$10^{-18}$$   |  a        |
+#   |  hecto    |  $$10^{2}$$   |  h        |  zepto    |   $$10^{-21}$$   |  z        |
+#   |  deca     |  $$10^{1}$$   |  da       |  yocto    |   $$10^{-24}$$   |  y        |
 # %% [markdown]
 # 
 #   En el caso de las fuentes de alimentación hemos de especificar si se trata de corriente continua (`vdc`) o alterna (`ac`).
@@ -172,7 +167,7 @@ from IPython import get_ipython
 # > **Respuesta**: 
 #   
 # |Unidad|Magnitud|
-# |-|-|
+# |:-|:-|
 # |Voltio ($\mathrm{V}$)|Diferencia de potencial|
 # |Amperio ($\mathrm{A}$)|Intensidad |
 # |Ohmio ($\Omega$)|Resistencia eléctrica|
@@ -290,7 +285,7 @@ from IPython import get_ipython
 #   
 #   
 # |PHP            |Python        |Javascript  |Java                    | Otros            |
-# |----           |----          |---         |---                     | ---              |
+# |:----          |:----         |:---        |:---                    |: ---             |
 # |   Laravel     | Django       |Express.js  | Spring                 | Ruby - Sinatra   |
 # |   CodeIgniter | Pyramid      |React.js    | Dropwizard             | C\# - ReactiveUI |
 # |   Symfony     | Web2py       |Angular.js  | GWT                    |                  |
@@ -345,17 +340,15 @@ from IPython import get_ipython
 #  También puedes instalar Ahkab directamente desde este mismo notebook:
 
 # %%
-get_ipython().system('pip install ahkab')
-
+!pip install ahkab
 # %% [markdown]
 # 
 #   Como siempre, una vez instalado cualquier framework para Python, ya lo podemos utilizar, tanto desde el [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop) como desde un entorno Jupyter (Jupyter, [Jupyterlab](http://jupyterlab.readthedocs.io/en/stable/), VS Code o nteract). Recuerda que para usar el kernel Python (que viene con Anaconda) desde nteract debes seguir las instrucciones que se indican en su [documentación oficial](https://nteract.io/kernels).
 # %% [markdown]
 #  Como vamos a pintar algunas gráficas, necesitamos instalar [matplotlib](https://matplotlib.org). Al igual que con Ahkab, esto lo podemos hacer directamente desde este mismo notebook. Si hemos usado Anaconda:
 
-# %%
-get_ipython().system('conda install -y -c conda-forge matplotlib')
-
+# %% 
+!conda install -y -c conda-forge matplotlib
 # %% [markdown]
 #   > **Pregunta:** 
 #   
@@ -469,9 +462,14 @@ mkdir(fig_directory)
 #  Es el *netlist* que representa el circuito mencionado.
 # 
 
-# %%
-get_ipython().run_cell_magic('writefile', '"files\\circuito_sencillo.sp"', '* Este es un circuito sencillo\nr1 N001 0 100\nv1 N001 0 type=vdc vdc=9\n.op\n.dc v1 start=0 stop=10 step=1\n.end')
-
+# %% 
+%%writefile "files\circuito_sencillo.sp"
+* Este es un circuito sencillo
+r1 N001 0 100
+v1 N001 0 type=vdc vdc=9
+.op
+.dc v1 start=0 stop=10 step=1
+.end
 # %% [markdown]
 #  Haciendo uso de la librería `Ahkab` procesamos el circuito que acabamos de definir.
 
@@ -751,8 +749,14 @@ if platform.system() == "Windows":
 #  También tenemos que cambiar ligeramente la sintaxis. Ejecuta esta línea para que se escriba el fichero siguiente. Para LTspice, vamos a reservar la extensión `.net`:
 
 # %%
-get_ipython().run_cell_magic('writefile', "'files\\circuito_sencillo.net'", '* Este es un circuito sencillo adaptado para LTspice\nr1 1 0 100\nv1 0 1 9\n.op\n* Comentamos el análisis .dc para centrarnos primero en el .op\n* .dc v1 1 10 \n.end')
-
+%%writefile 'files\circuito_sencillo.net'
+* Este es un circuito sencillo adaptado para LTspice
+r1 1 0 100
+v1 0 1 9
+.op
+* Comentamos el análisis .dc para centrarnos primero en el .op
+* .dc v1 1 10 
+.end
 # %% [markdown]
 #  Ejecutamos LTspice con el circuito (de la misma manera que antes habíamos hecho con Ahkab).
 # 
@@ -773,21 +777,24 @@ lts "files\circuito_sencillo.net"
 #  ## Contenido del `.log`:
 
 # %%
-get_ipython().run_line_magic('pycat', 'files\\circuito_sencillo.log')
-
+%pycat files\circuito_sencillo.log
 # %% [markdown]
 #  ## Contenido del `.raw`:
 
 # %%
-get_ipython().run_line_magic('pycat', 'files\\circuito_sencillo.net')
-
+%pycat files\circuito_sencillo.net
 # %% [markdown]
 #  Ahora repitamos lo mismo para el análisis `.dc`:
 
 # %%
-get_ipython().run_cell_magic('writefile', "'files\\circuito_sencillo.net'", '* Este es un circuito sencillo adaptado para LTspice\nr1 1 0 100\nv1 0 1 9\n* Comentamos el análisis .op para centrarnos primero en el .dc\n* .op\n.dc v1 1 10 10\n.end')
-
-
+%%writefile 'files\circuito_sencillo.net'
+* Este es un circuito sencillo adaptado para LTspice
+r1 1 0 100
+v1 0 1 9
+* Comentamos el análisis .op para centrarnos primero en el .dc
+* .op
+.dc v1 1 10 10
+.end
 # %%
 lts "files\circuito_sencillo.net"
 # %%
@@ -801,8 +808,7 @@ lts "files\circuito_sencillo.net"
 #  Al ejecutar esta simulación para el análisis `.dc`, el fichero `.raw` con los resultados es muchísimo más extenso. Para leer este fichero, y además, extraer los valores para la gráfica vamos a usar el paquete [ltspice de Python](https://github.com/DongHoonPark/ltspice_pytool), el cual se puede  instalar directamente desde Jupyter
 
 # %%
-get_ipython().system('pip install ltspice')
-
+!pip install ltspice
 # %% [markdown]
 #  Ahora leemos el fichero `.raw` y dibujamos la gráfica con los datos obtenidos con LTspice:
 
@@ -839,8 +845,15 @@ fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', 
 #  Al igual que antes, grabamos el netlist en disco desde Jupyter con los datos representativos del circuito comentado. Para ello usamos la *palabra mágica* [`%writefile`](https://ipython.readthedocs.io/en/stable/interactive/magics.html#cellmagic-writefile). Más info [aquí](https://ipython.readthedocs.io/en/stable/interactive/magics.html#cellmagic-writefile).
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\resistencias_en_serie.net"', '* circuito con tres resistencias en serie\nv1 1 0 type=vdc vdc=9\nR1 0 2 3k\nR2 2 3 10k  \nR3 3 1 5k\n* análisis del circuito\n.op\n.end')
-
+%%writefile "files\resistencias_en_serie.net"
+* circuito con tres resistencias en serie
+v1 1 0 type=vdc vdc=9
+R1 0 2 3k
+R2 2 3 10k  
+R3 3 1 5k
+* análisis del circuito
+.op
+.end
 # %% [markdown]
 #  Haciendo uso de la librería `Ahkab` procesamos el circuito que acabamos de definir.
 
@@ -967,8 +980,15 @@ print(resultados['op'])
 #  ```
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\resistencias_en_serie.net"', '* circuito con tres resistencias en serie\nv1 1 0 type=vdc vdc=9 \nR1 1 2 3k  \nR2 2 3 10k    \nR3 3 0 5k  \n* análisis del circuito\n.op\n.end')
-
+%%writefile "files\resistencias_en_serie.net"
+* circuito con tres resistencias en serie
+v1 1 0 type=vdc vdc=9 
+R1 1 2 3k  
+R2 2 3 10k    
+R3 3 0 5k  
+* análisis del circuito
+.op
+.end
 # %% [markdown]
 #  Volvemos a procesar el circuito con `Ahkab` y extraemos los datos.
 
@@ -1100,8 +1120,15 @@ convert_to(voltaje_resistencias, [volts]).n(2)
 #  Definimos el netlist del primer circuito paralelo.
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\resistencias_en_paralelo_1.cir"', '* resistencias en paralelo\nvdd 0 1 vdc=12 type=vdc\nr2 1 2 1k\nr3 2 3 220\nr4 3 0 1.5k\nr5 2 0 470\n.op\n.end')
-
+%%writefile "files\resistencias_en_paralelo_1.cir"
+* resistencias en paralelo
+vdd 0 1 vdc=12 type=vdc
+r2 1 2 1k
+r3 2 3 220
+r4 3 0 1.5k
+r5 2 0 470
+.op
+.end
 # %% [markdown]
 #  Procesamos el circuito con `Ahkab` y extraemos los datos.
 
@@ -1142,8 +1169,17 @@ print(resultados['op'])
 #  Definimos el netlist con las dos pilas de $\mathrm{0v}$
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\resistencias_en_paralelo_1.cir"', '* resistencias en paralelo\nvdd 1 0 vdc=12 type=vdc\nVdummy1 4 0 vdc=0 type=vdc\nVdummy2 5 0 vdc=0 type=vdc\nr2 1 2 1k\nr3 2 3 220\nr4 3 5 1.5k\nr5 2 4 470\n.op\n.end')
-
+%%writefile "files\resistencias_en_paralelo_1.cir"
+* resistencias en paralelo
+vdd 1 0 vdc=12 type=vdc
+Vdummy1 4 0 vdc=0 type=vdc
+Vdummy2 5 0 vdc=0 type=vdc
+r2 1 2 1k
+r3 2 3 220
+r4 3 5 1.5k
+r5 2 4 470
+.op
+.end
 # %% [markdown]
 #  Procesamos el circuito con `Ahkab` y extraemos los datos.
 
@@ -1303,8 +1339,18 @@ convert_to(voltaje_V3[0], [volts]).n(3)
 #  Definimos el netlist del segundo circuito paralelo. Nos adelantamos y colocamos una pila de $\mathrm{0\ v}$ en la malla de las tres resistencias en serie.
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\resistencias_en_paralelo_2.cir"', '* resistencias en paralelo\nv1 1 0 vdc=9 type=vdc\nv2 4 0 vdc=1.5 type=vdc\nvdummy 6 0 vdc=0 type=vdc\nr1 1 2 47\nr2 2 3 220\nr3 2 4 180\nr4 3 5 1k\nr5 5 6 560\n.op\n.end')
-
+%%writefile "files\resistencias_en_paralelo_2.cir"
+* resistencias en paralelo
+v1 1 0 vdc=9 type=vdc
+v2 4 0 vdc=1.5 type=vdc
+vdummy 6 0 vdc=0 type=vdc
+r1 1 2 47
+r2 2 3 220
+r3 2 4 180
+r4 3 5 1k
+r5 5 6 560
+.op
+.end
 # %% [markdown]
 #  Procesamos el circuito con `Ahkab` y extraemos los datos.
 
@@ -1442,8 +1488,17 @@ convert_to(voltaje_V5[0], [volts]).n(3)
 #  Definimos el netlist del tercer circuito paralelo.
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\resistencias_en_paralelo_3.cir"', '* resistencias en paralelo\nv 1 0 vdc=9 type=vdc\nv1 1 2 vdc=0 type=vdc\nv2 1 3 vdc=0 type=vdc\nv3 1 4 vdc=0 type=vdc\nr1 2 0 10k\nr2 3 0 2k\nr3 4 0 1k\n.op\n.end')
-
+%%writefile "files\resistencias_en_paralelo_3.cir"
+* resistencias en paralelo
+v 1 0 vdc=9 type=vdc
+v1 1 2 vdc=0 type=vdc
+v2 1 3 vdc=0 type=vdc
+v3 1 4 vdc=0 type=vdc
+r1 2 0 10k
+r2 3 0 2k
+r3 4 0 1k
+.op
+.end
 # %% [markdown]
 #  Procesamos el circuito con `Ahkab` y extraemos los datos.
 
@@ -1591,8 +1646,14 @@ convert_to(i_R3[0], [amperes]).n(5)
 #   Al igual que antes, primero guardamos el circuito en un netlist externo:
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\condensador_en_continua.ckt"', '* Carga condensador\nv1 1 0 type=vdc vdc=6\nr1 1 2 1k\nc1 2 0 1m ic=0\n.op\n.tran tstep=0.1 tstop=8 uic=0\n.end')
-
+%%writefile "files\condensador_en_continua.ckt"
+* Carga condensador
+v1 1 0 type=vdc vdc=6
+r1 1 2 1k
+c1 2 0 1m ic=0
+.op
+.tran tstep=0.1 tstop=8 uic=0
+.end
 # %% [markdown]
 #  > **Pregunta:** ¿qué significa el parámetro `ic=0`?
 # 
@@ -1848,8 +1909,16 @@ print(resultados['op'])
 # Sin embargo, el flujo de corriente será diferente por cada condensador. La suma de ambas corrientes será igual a la intensidad de la *resistencia limitadora de corriente*. Esto es debido a que, aunque los condensadores no tienen resistencia, sí que tienen impedancia, que al igual que la resistencia es una cuantificación del cuanto se opone un elemento al flujo de corriente. Pero a diferencia de la resistencia, la impedancia varía en el tiempo, puesto que su valor depende de un estado anterior. Es por lo que en circuitos de corriente continua, en donde los parámetros se mantienen en un mismo estado (tras un tiempo inicial de estabilización), lo habitual es hablar en términos de resistencia. Pero en circuitos de corriente alterna, donde los parámetros están en constante cambio, se habla en términos de impedancia.
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\carrera_de_condensadores.ckt"', '* Carga condensador\nv0 1 0 type=vdc vdc=10\nr1 0 2 3.3k\nc1 2 3 47u ic=0\nv1dummy 3 1 type=vdc vdc=0\nc2 2 4 22u ic=0\nv2dummy 4 1 type=vdc vdc=0\n.tran tstep=0.01 tstart=6.5 tstop=9 uic=0\n.end')
-
+%%writefile "files\carrera_de_condensadores.ckt"
+* Carga condensador
+v0 1 0 type=vdc vdc=10
+r1 0 2 3.3k
+c1 2 3 47u ic=0
+v1dummy 3 1 type=vdc vdc=0
+c2 2 4 22u ic=0
+v2dummy 4 1 type=vdc vdc=0
+.tran tstep=0.01 tstart=6.5 tstop=9 uic=0
+.end
 # %% [markdown]
 #  ### Procesamos el circuito con `Ahkab` y extraemos los datos.
 
@@ -2066,8 +2135,14 @@ fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', 
 #  ````.tran 0 8 6.4 0.01 uic````
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\carrera_de_condensadores.net"', '* Carga condensador\nv0 1 0 PWL(6.5 0 6.51 10)\nr1 2 0 3.3k\nc1 1 2 47u\nc2 1 2 22u \n.tran 0 8 6.4 0.01 uic\n.end')
-
+%%writefile "files\carrera_de_condensadores.net"
+* Carga condensador
+v0 1 0 PWL(6.5 0 6.51 10)
+r1 2 0 3.3k
+c1 1 2 47u
+c2 1 2 22u 
+.tran 0 8 6.4 0.01 uic
+.end
 # %% [markdown]
 #  Ejecutamos LTspice pasando al ejecutable el archivo que acabamos de crear como parámetro.
 
@@ -2085,9 +2160,8 @@ lts "files\carrera_de_condensadores.net"
 # 
 #  ## Contenido del `.log`:
 
-# %%
-get_ipython().run_line_magic('pycat', 'files\\carrera_de_condensadores.log')
-
+# %% [markdown]
+%pycat files\carrera_de_condensadores.log
 # %% [markdown]
 #  Ahora extraemos los datos del archivo `.raw`.
 
@@ -2185,8 +2259,12 @@ fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', 
 #  Se simula un circuito de corriente alterna usando un generador de onda sinusoidal configurado con un voltaje de pico de $\mathrm{120\ v}$, es decir, $V_{pp}=\mathrm{240\ v}$, y una frecuencia de $\mathrm{60\ Hz}$, conectado a una carga de $\mathrm{10\ k\Omega}$
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\corriente_alterna.net"', '* Circuito en corriente alterna\nv1 1 0 sin(0 120 60 0 0)\nr1 0 1 10k\n.tran 1\n.end')
-
+%%writefile "files\corriente_alterna.net"
+* Circuito en corriente alterna
+v1 1 0 sin(0 120 60 0 0)
+r1 0 1 10k
+.tran 1
+.end
 # %% [markdown]
 #  Ejecutamos LTspice con el netlist como parámetro para generar los archivos `.log` y `.raw`.
 
@@ -2294,9 +2372,12 @@ fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', 
 #  Veamos el resultado.
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\corriente_alterna.net"', '* Circuito en corriente alterna\nv1 1 0 sin(0 120 60 0 0)\nr1 0 1 10k\n.tran 0.05\n.end')
-
-
+%%writefile "files\corriente_alterna.net"
+* Circuito en corriente alterna
+v1 1 0 sin(0 120 60 0 0)
+r1 0 1 10k
+.tran 0.05
+.end
 # %%
 lts "files\corriente_alterna.net"
 # %%
@@ -2357,8 +2438,12 @@ fig.savefig(fig_directory_html + name + str(nSvg) + '.svg', transparent='true', 
 #  Lo primero es adaptar el netlist
 
 # %%
-get_ipython().run_cell_magic('writefile', '"files\\corriente_alterna.ckt"', '* Circuito alterna\nV1 1 0 type=sin vo=0 va=120 freq=60\nR1 0 1 10k\n.tran tstep=0.0001 tstart=0 tstop=0.05\n.end')
-
+%%writefile "files\corriente_alterna.ckt"
+* Circuito alterna
+V1 1 0 type=sin vo=0 va=120 freq=60
+R1 0 1 10k
+.tran tstep=0.0001 tstart=0 tstop=0.05
+.end
 # %% [markdown]
 #  ### Procesamos el circuito con `Ahkab` y extraemos los datos.
 
