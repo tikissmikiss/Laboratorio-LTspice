@@ -366,34 +366,29 @@
 #   V = I\cdot R
 #   $$
 # %% [markdown]
-#   > **Pregunta:** 
-#   
-#   comprueba que la ecuación anterior está ajustada a nivel dimensional, es decir, que la naturaleza de lo que está a ambos lados del signo igual es la misma. Realiza este ejercicio con LaTeX en una celda Markdown.
-# 
-#   > **Respuesta:** 
-#   
-#   * Conocido:
-#   
-#   $$F=\frac{C}{V}=\frac{s}{\Omega}\ \rightarrow\Omega=\frac{s}{F}$$
-#   
-#   
-#   $$A=\frac{C}{s}$$
-#   
-#   
-#   $$V=\frac{J}{C}$$
-#   
-#   * Demostración:
-#   
-#   $$V=\Omega\cdot A\ \rightarrow \text{como}\ A=\frac{C}{s}$$
-#   
-#  
-#   $$V=\Omega\cdot\frac{C}{s}\ \rightarrow \text{como}\ \Omega=\frac{s}{F}$$
-#   
-#   
-#   $$V=\frac{s}{F}\cdot\frac{C}{s}\ \rightarrow\ V=\frac{C}{F}\rightarrow\ F=\frac{C}{V}\rightarrow \text{como}\ F=\frac{C}{V}\ $$
-#   
-#   
-#   $$F=F$$
+# > **Pregunta:** 
+#
+# comprueba que la ecuación anterior está ajustada a nivel dimensional, es decir, que la naturaleza de lo que está a ambos lados del signo igual es la misma. Realiza este ejercicio con LaTeX en una celda Markdown.
+#
+# > **Respuesta:** 
+#
+# * Conocido:
+#
+# $$\mathrm{F}=\frac{\mathrm{C}}{\mathrm{V}}=\frac{\mathrm{s}}{  \Omega }\ \rightarrow  \Omega = \frac{\mathrm{s}}{\mathrm{F}}$$
+#
+# $$\mathrm{A}=\frac{\mathrm{C}}{\mathrm{s}}$$
+#
+# $$\mathrm{V}=\frac{\mathrm{J}}{\mathrm{C}}$$
+#
+# * Demostración:
+#
+# $$\mathrm{V}=\Omega\cdot \mathrm{A}\ \rightarrow\ \text{como}\ \mathrm{A}=\frac{\mathrm{C}}{\mathrm{s}}$$
+#
+# $$\mathrm{V}=\Omega\cdot\frac{\mathrm{C}}{\mathrm{s}}\ \rightarrow\ \text{como}\ \Omega=\frac{\mathrm{s}}{\mathrm{F}}$$
+#
+# $$\mathrm{V}=\frac{\mathrm{s}}{\mathrm{F}}\cdot\frac{\mathrm{C}}{\mathrm{s}}\ \rightarrow\ \mathrm{V}=\frac{\mathrm{C}}{\mathrm{F}}\rightarrow\ \mathrm{F}=\frac{\mathrm{C}}{\mathrm{V}}\rightarrow\ \text{como}\ \mathrm{F}=\frac{\mathrm{C}}{\mathrm{V}}$$
+#
+# $$\mathrm{F}=\mathrm{F}$$
 # %% [markdown]
 #   Comencemos con el circuito más sencillo posible de todos:
 # 
