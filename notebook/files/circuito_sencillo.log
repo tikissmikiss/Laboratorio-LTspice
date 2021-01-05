@@ -2,7 +2,7 @@ Circuit: * Este es un circuito sencillo adaptado para LTspice
 
 .dc: Increment so large that there's only one step.
 
-Date: Mon Jan 04 22:04:50 2021
+Date: Tue Jan 05 11:54:54 2021
 Total elapsed time: 0.003 seconds.
 
 tnom = 27
